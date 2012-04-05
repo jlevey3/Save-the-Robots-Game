@@ -33,9 +33,8 @@ def main():
                 done = True
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 done = True
-            elif event.type == KEYDOWN and event.key == K_w:
-                print "up"
-                player.walk.north
+	
+	
 
 
     #input
