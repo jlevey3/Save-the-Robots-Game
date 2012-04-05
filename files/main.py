@@ -8,11 +8,11 @@ from player import Player
 
 
 
-SCREEN_SIZE = 800,100
-BG_COLOR = 255,0,0
+SCREEN_SIZE = 800,600
+BG_COLOR = 0,0,0
 
 def main():
-	"This is a docstring"
+
     #initialize pygame
     pygame.init()
     screen = pygame.display.set_mode(SCREEN_SIZE)
@@ -35,7 +35,7 @@ def main():
                 done = True
             elif event.type == KEYDOWN and event.key == K_w:
                 print "up"
-                player.walk(0)
+                player.walk.north
 
 
     #input
