@@ -12,6 +12,7 @@ SCREEN_SIZE = 800,100
 BG_COLOR = 255,0,0
 
 def main():
+	"This is a docstring"
     #initialize pygame
     pygame.init()
     screen = pygame.display.set_mode(SCREEN_SIZE)
@@ -58,4 +59,5 @@ def main():
 if __name__ == "__main__":
     main()
     print "Game Over"
+	
     
