@@ -5,7 +5,7 @@ from pygame.locals import *
 from pygame.sprite import Group, GroupSingle, groupcollide
 from random import randrange
 from player import Player
-
+from robots import Robot
 
 
 SCREEN_SIZE = 800,600
@@ -20,7 +20,9 @@ def main():
     
     #initialize game
     player = Player(bounds.center, bounds) #sets starting position fir player
+    robot = Robot(bounds.bottomleft, bounds)
     player_grp = GroupSingle(player)
+    robot_grp = GroupSingle(robot)
 
     #game loop
     done = False
@@ -33,7 +35,11 @@ def main():
                 done = True
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 done = True
-	
+
+            keys = pygame.key.get_pressed()
+            if groupcollide(robot_grp, player_grp, False, False) and keys[K_SPACE]:
+                Robot.grabbed
+                print "robot picked up"
 	
 
 
@@ -49,6 +55,7 @@ def main():
     #draw
         screen.fill(BG_COLOR)
         player_grp.draw(screen)
+        robot_grp.draw(screen)
         pygame.display.flip()
     
         clock.tick(30)
