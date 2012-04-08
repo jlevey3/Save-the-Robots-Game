@@ -36,10 +36,16 @@ def main():
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 done = True
 
-            keys = pygame.key.get_pressed()
-            if groupcollide(robot_grp, player_grp, False, False) and keys[K_SPACE]:
-                Robot.grabbed
-                print "robot picked up"
+            
+            elif event.type == KEYDOWN and event.key == K_SPACE:
+                if player.carrying:
+                    player.drop()
+                else:
+                    for robot in groupcollide(robot_grp, player_grp, False, False):
+                        player.grab(robot)
+                        print "robot picked up"
+                        break
+                
 	
 
 

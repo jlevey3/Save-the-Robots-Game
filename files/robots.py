@@ -19,10 +19,6 @@ class Robot(Sprite):
 
     def update(self):
         keys = pygame.key.get_pressed()
-        
-        
         self.rect.clamp_ip(self.bounds)
+    
 
-
-    def grabbed(self, loc):
-        self

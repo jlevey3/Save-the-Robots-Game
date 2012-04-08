@@ -20,7 +20,16 @@ class Player(Sprite):
         self.bounds = bounds
         
         self.image.fill(self.color)
+        
+        self.carrying = None
     
+    def grab(self, robot):
+        if not self.carrying:
+            self.carrying = robot
+
+    def drop(self):
+        self.carrying = None 
+
     def update(self):
         keys = pygame.key.get_pressed()
         if keys[K_DOWN] or keys[K_s]:
@@ -33,3 +42,7 @@ class Player(Sprite):
             self.rect.x += self.speed
 
         self.rect.clamp_ip(self.bounds) #stays within bounds
+
+
+        if self.carrying:
+            self.carrying.rect.center = self.rect.center #clamps robot to player
