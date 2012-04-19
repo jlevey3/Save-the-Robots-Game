@@ -5,7 +5,7 @@ from pygame.locals import *
 from pygame.sprite import Group, GroupSingle, groupcollide
 from random import randrange
 from player import Player
-from robots import Robot
+from robots import *
 from meteors import * # Meteor, Impact
 
 
@@ -36,8 +36,8 @@ class Game(object):
     #robot_grp = GroupSingle(robot)
     
 	self.robot_grp.add(Robot((randrange(0,800),randrange(0,600)), self.bounds))
-	self.robot_grp.add(Robot((randrange(0,800),randrange(0,600)), self.bounds))
-	self.robot_grp.add(Robot((randrange(0,800),randrange(0,600)), self.bounds))
+	self.robot_grp.add(Motherbot((randrange(0,800),randrange(0,600)), self.bounds))
+	self.robot_grp.add(Fatherbot((randrange(0,800),randrange(0,600)), self.bounds))
 	self.meteors = Group()
 	self.impacts = Group()
 	self.play()
@@ -121,8 +121,20 @@ class Game(object):
 	screen.blit(score_text, (5,5))
 	pygame.display.flip()
 
+#class Startup(object):
+ #   screen = pygame.display.set_mode(SCREEN_SIZE)
+  #  bounds = screen.get_rect()
+   # font = pygame.font.Font(None,35)
+    #def __init__ (self):
+	#self.SCREEN_SIZE = SCREEN_SIZE
+	#self.BG_COLOR = BG_COLOR
+##Input
 
-if __name__ == "__main__":
+##Draw
+
+##refresh
+
+if __name__ == "__main__":   
     NewGame = Game()
     NewGame.play()
     print "Game Over"
