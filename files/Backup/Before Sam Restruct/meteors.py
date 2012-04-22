@@ -40,6 +40,7 @@ class Meteor (Sprite):
         self.kind = kind
         
         if self.kind == "ice":
+            print "Recoloring for ice"
             self.COLOR = 0, 50, 155
         self.image.fill(self.COLOR)
         #self.original_image = image.convert()
@@ -64,7 +65,7 @@ class Meteor (Sprite):
             ImpactGroup.impacts.add(IceImpact (self.rect.center, self.bounds, 30, self.kind, 2))
             ImpactGroup.impacts.add(IceImpact (self.rect.center, self.bounds, 30, self.kind, 3))
 
-            
+            print "ICE"
         Sprite.kill(self)
      
 #class Meteor_Fall(Sprite):
@@ -100,7 +101,7 @@ class Impact(Meteor):
     duration = 5
     def __init__(self,loc, bounds, duration, kind):
         
-        #print "explosion!"
+        print "explosion!"
         
         # Ice should have moving impacts
         Sprite.__init__(self)

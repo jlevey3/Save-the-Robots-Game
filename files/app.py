@@ -45,5 +45,7 @@ class Application(object):
 
             self.state.update()
             self.state.draw(self.screen)
+
+            #self.state.draw()
             pygame.display.flip()
-  
+
