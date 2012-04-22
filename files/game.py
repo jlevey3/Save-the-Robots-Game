@@ -1,7 +1,7 @@
 import pygame
 
 from app import Application
-from main import MainMenu
+from main import Instruction
 
 def main():
     # initialize pygame
@@ -9,7 +9,7 @@ def main():
     pygame.display.set_mode((800, 600))
 
     # create game
-    app = Application(MainMenu)
+    app = Application(Instruction)
     try:
         app.run()
     except KeyboardInterrupt:

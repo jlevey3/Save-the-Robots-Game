@@ -8,11 +8,56 @@ from player import Player
 from robots import *
 from meteors import * # Meteor, Impact
 from app import ApplicationState, Application
+from text import TextBlock
 
 SCREEN_SIZE = 800,600
 BG_COLOR = 0,0,0
 pygame.init()
 
+class Instruction(ApplicationState):
+    fg_color = 25,255,55
+    bg_color = 0,0,0
+    
+    def setup(self):
+        font = pygame.font.Font(None, 30)
+        
+        tb = TextBlock(font, justify=TextBlock.LEFT)
+        self.text = tb.render("""
+Archibald the Robot lived a happy existence with his robo-family, 
+until one day their planet was bombarded by meteors! 
+Navigate Archie around the screen to help rescue his family members
+from falling meteors. 
+Move quickly to avoid the meteors.
+When Archie is carrying a family member, he will be significantly slowed.
+
+Controls: 
+ * Move around with W A S D keys.
+ * Space picks up family members. 
+ * ESC pauses the game.
+ * ESC + q brings you back to the menu screen.
+
+Hit <SPACE> to continue.
+
+Good luck!
+""".strip().split("\n"), True, self.fg_color, self.bg_color)
+
+                
+    def handle_event(self, event):
+        if event.type == KEYDOWN and event.key == K_ESCAPE:
+            self.app.quit()
+        elif event.type == KEYDOWN and event.key == K_SPACE:
+            self.app.set_state(MainMenu)
+
+    def draw(self, screen):
+        bounds = screen.get_rect()
+
+        screen.fill(self.bg_color)
+        
+        rect = self.text.get_rect()
+        rect.center = bounds.center
+        screen.blit(self.text, rect)
+        
+        
 class MainMenu(ApplicationState):
     fg_color = 25,255,55
     bg_color = 0,0,0
