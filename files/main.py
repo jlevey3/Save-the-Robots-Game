@@ -169,8 +169,9 @@ class Game(ApplicationState):
 	self.player_grp.draw(screen)
 	self.robot_grp.draw(screen)
 	self.clock.tick(30)
+        lives_text = self.font.render("Lives: %01d"%self.player.lives, False, (255,255,255))
 	score_text = self.font.render("Score: %05d"%self.score, False, (255,255,255))
-	
+	screen.blit(lives_text, (200,5))
 	screen.blit(score_text, (5,5))
         gameover_text = self.font.render("Game over! Your score is %05d. Hit ESC + q to return to main menu."%self.score, False, (255,255,255))
 

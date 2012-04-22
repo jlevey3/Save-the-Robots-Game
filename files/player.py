@@ -11,6 +11,7 @@ class Player(Sprite):
     speedmod_rad = 0 # default -2
     speedmod_carrying = 0 #default -2
     speedmods = [0,0] #element 0 is carried, element 1-X is environment.
+    lives = 3
 
     def __init__(self,loc,bounds):
         Sprite.__init__(self)
@@ -59,7 +60,14 @@ class Player(Sprite):
             self.color = self.color[0], self.color[1]+1, self.color[2]+1 
             self.image.fill(self.color)
     
-    
+    def kill(self):
+        print "i died"
+        if self.lives == 0:
+            Sprite.kill(self)
+        else:
+            self.lives -= 1
+            self.color = [255,255,255]
+
     def damage (self, source):
         "Applies damage effect unique to the robot.  source is the object, source_element is the damage type"
         if source.kind != "radiation":  
@@ -72,3 +80,4 @@ class Player(Sprite):
                 self.image.fill(self.color)
         if source.kind == "rock":
             print "Player was hit by a rock!"
+            
