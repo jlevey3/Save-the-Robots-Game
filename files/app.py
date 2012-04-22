@@ -13,6 +13,7 @@ class ApplicationState(object):
     def handle_event(self, event): pass
     def update(self): pass
     def draw(self, screen): pass
+    def game_over(self): pass
 
 
 class Application(object):
