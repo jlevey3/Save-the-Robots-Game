@@ -7,29 +7,89 @@ from random import randrange
 from player import Player
 from robots import *
 from meteors import * # Meteor, Impact
-
+from app import ApplicationState, Application
 
 SCREEN_SIZE = 800,600
 BG_COLOR = 0,0,0
 pygame.init()
 
-class Game(object):
-    screen = pygame.display.set_mode(SCREEN_SIZE)
-    bounds = screen.get_rect()
-    font = pygame.font.Font(None,35)
-    def __init__ (self):
+class MainMenu(ApplicationState):
+    fg_color = 25,255,55
+    bg_color = 0,0,0
+    flash_rate = 500
+
+    def setup(self):
+        font = pygame.font.Font(None, 70)
+
+        font.set_bold(True)
+        font.set_underline(True)
+        self.title = font.render("ROCKS AND ROBOTS", True, self.fg_color, self.bg_color)
+
+        font.set_bold(False)
+        font.set_italic(True)
+        font.set_underline(False)
+        self.inst = font.render("Press <SPACE> to Start", True, self.fg_color, self.bg_color)
+
+    def resume(self):
+        self.clock = pygame.time.Clock()
+        self.time = 0
+
+    def handle_event(self, event):
+        if event.type == KEYDOWN and (event.key == K_q or event.key == K_ESCAPE):
+            self.app.quit()
+        elif event.type == KEYDOWN and event.key == K_SPACE:
+            self.app.set_state(Game)
+
+    def update(self):
+        self.time += self.clock.tick()
+        self.time %= 2 * self.flash_rate
+        self.draw_inst = self.time < self.flash_rate
+
+
+    def draw(self, screen):
+        bounds = screen.get_rect()
+
+        screen.fill(self.bg_color)
+        
+        rect = self.title.get_rect()
+        rect.center = bounds.centerx, bounds.centery - bounds.height / 4
+        screen.blit(self.title, rect)
+
+        if self.draw_inst:
+            rect = self.inst.get_rect()
+            rect.center = bounds.centerx, bounds.centery + bounds.height / 4
+            screen.blit(self.inst, rect)
+
+
+class PauseMenu(ApplicationState):
+    def resume(self):
+        self.game = self.app.state
+
+        screen = pygame.display.get_surface()
+        frame = screen.convert_alpha()
+        frame.fill((0,0,0,128))
+        screen.blit(frame, (0,0))
+
+
+    def handle_event(self, event):
+        if event.type == KEYDOWN and event.key == K_q:
+            self.app.set_state(MainMenu)
+        elif event.type == KEYDOWN and (event.key == K_SPACE or event.key == K_ESCAPE):
+            self.app.set_state(self.game)
+
+class Game(ApplicationState):
+
+    def setup (self):
 	self.SCREEN_SIZE = SCREEN_SIZE
 	self.BG_COLOR = BG_COLOR
 	self.score = 0
 	self.spawntime = 10
 	self.spawnticker = 0
 	self.robot_grp = Group()
-    #initialize pygame
+
+        self.bounds = self.app.screen.get_rect()
+        self.font = pygame.font.Font(None,35)
     
-    
-    
-    #initialize game
-	
 	self.player = Player(self.bounds.center, self.bounds) #sets starting position fir player
 	robot = Robot((randrange(0,800),randrange(0,600)), self.bounds)
 	self.player_grp = GroupSingle(self.player)
@@ -40,74 +100,56 @@ class Game(object):
 	self.robot_grp.add(Fatherbot((randrange(0,800),randrange(0,600)), self.bounds))
 	self.meteors = Group()
 	self.impacts = Group()
-	self.play()
     
 	
 
     #game loop
-    def input(self):
-	for event in pygame.event.get():
-	    if event.type == QUIT:
-	        self.quit()
-	    elif event.type == KEYDOWN and event.key == K_ESCAPE:
-	        self.quit()
+    def handle_event(self, event):
+        if event.type == KEYDOWN and event.key == K_ESCAPE:
+            self.app.set_state(PauseMenu)
+        elif event.type == KEYDOWN and event.key == K_SPACE:
+            if self.player.carrying:
+                self.player.drop()
+            else:
+                for robot in groupcollide(self.robot_grp, self.player_grp, False, False):
+                    self.player.grab(robot)
+                    self.score += 5
+                    print "robot picked up"
 
-	    
-	    elif event.type == KEYDOWN and event.key == K_SPACE:
-		if self.player.carrying:
-		    self.player.drop()
-		else:
-		    for robot in groupcollide(self.robot_grp, self.player_grp, False, False):
-			self.player.grab(robot)
-			self.score += 5
-			print "robot picked up"
-			break
-    def quit(self):
-	self.done = True
-    
-    def play(self):
-	 # this line may need moving
-	self.done = False
+            
+    def resume(self):    
 	self.clock = pygame.time.Clock()
 	print "Loop Started"
-	while not self.done:  # MAIN WHILE LOOP
-		    
+	
+    def update(self):
+        self.spawnticker += 1
+        
+        if self.spawnticker >= self.spawntime:
+            print "ICE SPAWNED"
+            self.meteors.add(Meteor((randrange(0,800),randrange(0,600)),self.bounds, 90, "ice"))
 	    
-    
-    
-	#input
-	    self.input()
-	#spawn meteors
-	    self.spawnticker += 1
-	    
-	    if self.spawnticker >= self.spawntime:
-		print "ICE SPAWNED"
-		self.meteors.add(Meteor((randrange(0,800),randrange(0,600)),self.bounds, 90, "ice"))
-	    
-	    if self.spawnticker >= self.spawntime:
-		#print "spawned!"
-		self.meteors.add(Meteor((randrange(0,800),randrange(0,600)),self.bounds, 90, "rock"))
-		self.spawnticker = 0
+        if self.spawnticker >= self.spawntime:
+            #print "spawned!"
+            self.meteors.add(Meteor((randrange(0,800),randrange(0,600)),self.bounds, 90, "rock"))
+            self.spawnticker = 0
 		
 	#update
-	    self.meteors.update()
-	    ImpactGroup.impacts.update()
-	    self.player.update()
+        self.meteors.update()
+        ImpactGroup.impacts.update()
+        self.player.update()
     
 	#collisions
-	    coll = groupcollide(self.player_grp, ImpactGroup.impacts, False, False)
-	    for robot in coll:
-		robot.damage(coll[robot][0])
+        coll = groupcollide(self.player_grp, ImpactGroup.impacts, False, False)
+        for robot in coll:
+            robot.damage(coll[robot][0])
 	    
-	    coll = groupcollide(self.robot_grp, ImpactGroup.impacts, False, False)
-	    for robot in coll:
-		robot.damage(coll[robot][0])
-	    
-	    self.draw()
-	#draw
-    def draw(self):
-	screen = self.screen
-	self.screen.fill(BG_COLOR)
+        coll = groupcollide(self.robot_grp, ImpactGroup.impacts, False, False)
+        for robot in coll:
+            robot.damage(coll[robot][0])
+
+
+    def draw(self, screen):
+	screen.fill(BG_COLOR)
 	
 	self.robot_grp.draw(screen)
 	
@@ -119,24 +161,8 @@ class Game(object):
 	score_text = self.font.render("Score: %05d"%self.score, False, (255,255,255))
 	
 	screen.blit(score_text, (5,5))
-	pygame.display.flip()
 
-#class Startup(object):
- #   screen = pygame.display.set_mode(SCREEN_SIZE)
-  #  bounds = screen.get_rect()
-   # font = pygame.font.Font(None,35)
-    #def __init__ (self):
-	#self.SCREEN_SIZE = SCREEN_SIZE
-	#self.BG_COLOR = BG_COLOR
-##Input
 
-##Draw
 
-##refresh
-
-if __name__ == "__main__":   
-    NewGame = Game()
-    NewGame.play()
-    print "Game Over"
 	
     
