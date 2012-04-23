@@ -3,6 +3,7 @@ import pygame
 from pygame.locals import *
 from pygame.sprite import Sprite, Group
 from pygame import Surface
+from resource import *
 
 class Player(Sprite):
     color = 255,255,255
@@ -17,12 +18,9 @@ class Player(Sprite):
         Sprite.__init__(self)
         self.image = Surface(self.size)
         self.rect = self.image.get_rect()
-       # self.image, self.rect = load_image('robotzim.bmp', -1)
+        self.image = load_image('icemeteor')
         self.rect.center = loc
         self.bounds = bounds
-        
-        self.image.fill(self.color)
-        
         self.carrying = None
     
     def grab(self, robot):
@@ -66,10 +64,10 @@ class Player(Sprite):
         if source.kind != "radiation":  
             print "player hit: ", source, " ", source.kind
             #self.kill()
-            if self.color[1]-10 < 0: #ensures a legal color
-                self.kill()
-            else:
-                self.color = self.color[0], self.color[1]-10, self.color[2]-10  # NEED BETTER WAY TO DO THIS
-                self.image.fill(self.color)
+                #if self.color[1]-10 < 0: #ensures a legal color
+            #self.kill()
+                #else:
+                #self.color = self.color[0], self.color[1]-10, self.color[2]-10  # NEED BETTER WAY TO DO THIS
+        #self.image.fill(self.color)
         if source.kind == "rock":
             print "Player was hit by a rock!"

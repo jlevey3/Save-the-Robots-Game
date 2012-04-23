@@ -9,7 +9,7 @@ from robots import *
 from meteors import * # Meteor, Impact
 from app import ApplicationState, Application
 from text import TextBlock
-
+import os, sys
 SCREEN_SIZE = 800,600
 BG_COLOR = 0,0,0
 pygame.init()
@@ -165,7 +165,19 @@ class Game(ApplicationState):
                     self.score += 50
                     print "robot picked up"
 
-            
+    def load_image(name, colorkey=None):
+        fullname = os.path.join('resources', name)
+        try:
+            image = pygame.image.load(fullname)
+        except pygame.error, message:
+            print "Cant load yo image:", name
+            raise SystemExit, message
+        image = image.convert()
+        if colorkey is not None:
+            if colorkey is -1:
+                colorkey = image.get_at((0,0))
+            image.set_colorkey(colorkey, RLEACCEL)
+        return image, image.get_rect()
     def resume(self):    
 	self.clock = pygame.time.Clock()
 	print "Loop Started"
