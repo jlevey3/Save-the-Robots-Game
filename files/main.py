@@ -124,7 +124,8 @@ class PauseMenu(ApplicationState):
             self.app.set_state(self.game)
 
 class Game(ApplicationState):
-
+    foo = "foo"
+    
     def setup (self):
 	self.SCREEN_SIZE = SCREEN_SIZE
 	self.BG_COLOR = BG_COLOR
@@ -132,6 +133,8 @@ class Game(ApplicationState):
 	self.spawntime = 10
 	self.spawnticker = 0
 	self.robot_grp = Group()
+	ImpactGroup.impacts = Group()
+	ShieldGroup.shields = Group()
 
         self.bounds = self.app.screen.get_rect()
         self.font = pygame.font.Font(None,35)
@@ -142,7 +145,7 @@ class Game(ApplicationState):
     #robot_grp = GroupSingle(robot)
     
 	self.robot_grp.add(Robot((randrange(0,800),randrange(0,600)), self.bounds))
-	self.robot_grp.add(Motherbot((randrange(0,800),randrange(0,600)), self.bounds))
+	self.robot_grp.add(Brotherbot((randrange(0,800),randrange(0,600)), self.bounds))
 	self.robot_grp.add(Fatherbot((randrange(0,800),randrange(0,600)), self.bounds))
 	self.meteors = Group()
 	self.impacts = Group()
@@ -174,18 +177,20 @@ class Game(ApplicationState):
         self.spawnticker += 1
         
         if self.spawnticker >= self.spawntime:
-            print "ICE SPAWNED"
-            self.meteors.add(Meteor((randrange(0,800),randrange(0,600)),self.bounds, 90, "ice"))
+            #print "ICE SPAWNED"
+            self.meteors.add(IceMeteor((randrange(0,800),randrange(0,600)),self.bounds, 90, "ice"))
 	    
         if self.spawnticker >= self.spawntime:
             #print "spawned!"
-            self.meteors.add(Meteor((randrange(0,800),randrange(0,600)),self.bounds, 90, "rock"))
+            self.meteors.add(RockMeteor((randrange(0,800),randrange(0,600)),self.bounds, 90, "rock"))
             self.spawnticker = 0
 		
 	#update
         self.meteors.update()
         ImpactGroup.impacts.update()
         self.player.update()
+	ShieldGroup.shields.update()
+	FallingGroup.fallings.update()
     
 	#collisions
         coll = groupcollide(self.player_grp, ImpactGroup.impacts, False, False)
@@ -210,9 +215,13 @@ class Game(ApplicationState):
 	self.robot_grp.draw(screen)	
 
 	ImpactGroup.impacts.draw(screen)
+	ShieldGroup.shields.draw(screen)
 	self.meteors.draw(screen)
 	self.player_grp.draw(screen)
 	self.robot_grp.draw(screen)
+	FallingGroup.fallings.draw(screen)
+	
+	
 	self.clock.tick(30)
         lives_text = self.font.render("Lives: %01d"%self.player.lives, False, (255,255,255))
 	score_text = self.font.render("Score: %05d"%self.score, False, (255,255,255))

@@ -2,57 +2,73 @@ import pygame
 from pygame import Surface
 from pygame.sprite import Sprite, Group #sprites and groups!
 from random import randrange
+from robots import *
+from utils import *
+
+
+def collide_meteor_shield(meteor, shield):
+    return collide_rect_circle(meteor.rect, shield.rect.center, shield.rect.width/2)
+    
+def distance (self, other):
+    return math.sqrt((other.x-self.x)**2 + (other.y-self.y)**2)
 
 class ImpactGroup(Group):
     impacts = Group()
+
+class FallingGroup(Group):
+    fallings = Group()
         
 
-class Hazard (Sprite):
-    coord_x = 0
-    coord_y = 0
-    size = (2,2)
-    duration = 60
-    COLOR = 255,0,0
-    def __init__(self,loc, bounds, falltime, kind):
-        Sprite.__init__(self)
-        self.image = Surface(self.size)
-        self.rect = self.image.get_rect()
-        self.rect.bottomleft = loc
-        self.image.fill(self.COLOR)
-        self.bounds = bounds
-        self.duration = duration
-        self.kind = kind
         
 class Meteor (Sprite):
     coord_x = 0
     coord_y = 0
     size = (5,5)
     duration = 60
+    child_effect = 0;
     COLOR = 255,0,0
+    
     def __init__(self,loc, bounds, falltime, kind, dir=0):
         Sprite.__init__(self)
         self.image = Surface(self.size)
         self.rect = self.image.get_rect()
-        self.rect.bottomleft = loc
+        self.rect.center = loc
         self.dir = dir
         self.bounds = bounds
         self.falltime = falltime
         self.kind = kind
-        
-        if self.kind == "ice":
-            self.COLOR = 0, 50, 155
+        if self.kind == "iron":
+            self.COLOR = 50,50,50
         self.image.fill(self.COLOR)
+        
+        FallingGroup.fallings.add(FallingMeteor (self))
         #self.original_image = image.convert()
     def update(self):
+       
         self.duration -= 1
+        self.checkshield()
+        
         if self.duration <= 0:
             self.coord_x, self.coord_y = self.rect.center
             self.kill()
+        
         #if self.duration < 30:
         #    if self.duration%2 == 0:
         #        self.image.fill(self.image.get_colorkey())
         #        self.image.blit(self.original_image,(0,0))
                 
+    
+    def checkshield(self):
+        if self.duration == 1:
+            coll = pygame.sprite.spritecollide(self, ShieldGroup.shields, False, collide_meteor_shield)
+            for shield in coll:
+                #Turn into objects later on.
+                if shield.kind == "baseball" and self.kind == "rock":
+                    Sprite.kill(self)
+                    pygame.draw.line(pygame.display.get_surface(), (255,0,0), self.rect.center, shield.rect.center, 3)
+                if shield.kind == "cigar" and self.kind == "ice":
+                    Sprite.kill(self)
+                    pygame.draw.line(pygame.display.get_surface(), (255,0,0), self.rect.center, shield.rect.center, 3)
     
     def kill(self):
         #self.explode = Surface(self.size)
@@ -66,33 +82,57 @@ class Meteor (Sprite):
 
             
         Sprite.kill(self)
-     
-#class Meteor_Fall(Sprite):
+
+class IceMeteor(Meteor):
+    size = 5,5
+    COLOR = 0, 50, 155
+    def shieldcheck(self):
+        if self.duration == 1:
+            coll = pygame.sprite.spritecollide(self, ShieldGroup.shields, False, collide_meteor_shield)
+            for shield in coll:
+                if shield.kind == "cigar":
+                    Sprite.kill(self)
+                    pygame.draw.line(pygame.display.get_surface(), (255,0,0), self.rect.center, shield.rect.center, 3)
+        
+    def kill(self):
+        ImpactGroup.impacts.add(RockImpact (self.rect.center, self.bounds, 4, self.kind))
+        Sprite.kill(self)
     
-class IceImpact (Meteor):
-    COLOR = 0,50,160
-    duration = 30
-    size = (30,30)
+class RockMeteor(Meteor):
+    COLOR = 255,165,0
+    size = 5,5
+    def shieldcheck(self):
+        if self.duration == 1:
+            coll = pygame.sprite.spritecollide(self, ShieldGroup.shields, False, collide_meteor_shield)
+            for shield in coll:
+                if shield.kind == "baseball":
+                    Sprite.kill(self)
+                    pygame.draw.line(pygame.display.get_surface(), (255,0,0), self.rect.center, shield.rect.center, 3)
+        
+    def kill(self):
+        ImpactGroup.impacts.add(RockImpact (self.rect.center, self.bounds, 4, self.kind))
+        Sprite.kill(self)
+
+class IronMeteor(Meteor):
+    COLOR = 255,255,255
+    size = 7,7
+    
     
     def update(self):
         self.duration -= 1
-        if self.dir == 0:
-            self.rect.x -= 5
-        if self.dir == 1:
-            self.rect.y -= 5
-        if self.dir == 2:
-            self.rect.y += 5
-        if self.dir == 3:
-            self.rect.x += 5
-        # 0 = West, 1 = North, 2 = East, 3 = South
+        self.checkshield()
         if self.duration <= 0:
-            
-            
             self.coord_x, self.coord_y = self.rect.center
             self.kill()
-    def kill(self):    
-        Sprite.kill(self)
-        
+#class Meteor_Fall(Sprite):
+    
+
+
+
+
+
+
+
         
 class Impact(Meteor):
     size = (100,100)
@@ -126,9 +166,63 @@ class Impact(Meteor):
         Sprite.kill(self)
 
 
+class RockImpact(Impact):
+    COLOR = 110,110,110
+    kind = "rock"
+
+class IceImpact (Meteor):
+    COLOR = 0,50,160
+    duration = 30
+    size = (30,30)
+    def update(self):
+        self.duration -= 1
+        if self.dir == 0:
+            self.rect.x -= 5
+        if self.dir == 1:
+            self.rect.y -= 5
+        if self.dir == 2:
+            self.rect.y += 5
+        if self.dir == 3:
+            self.rect.x += 5
+        # 0 = West, 1 = North, 2 = East, 3 = South
+        self.checkshield()
+        if self.duration <= 0:
+            
+            self.coord_x, self.coord_y = self.rect.center
+            self.kill()
+    def checkshield(self):
+        coll = pygame.sprite.spritecollide(self, ShieldGroup.shields, False, collide_meteor_shield)
+        for shield in coll:
+            for shield in coll:
+            #Turn into objects later on.
+                if shield.kind == "cigar":
+                    Sprite.kill(self)
+                    pygame.draw.line(pygame.display.get_surface(), (255,0,0), self.rect.center, shield.rect.center, 3)
+                    
+    def kill(self):    
+        Sprite.kill(self)
 
 # make impact group itself a Group().  Group is an object.  Make a new class for each element
 # of meteor
 
+class FallingMeteor(Sprite):
+    COLOR = 0,0,0
+    size = 20,20
+    def __init__(self, parent):
+        print "Falling Meteor Created!"
+        Sprite.__init__(self)
+        self.parent = parent
+        self.COLOR = parent.COLOR
+        self.image = Surface(self.size)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.parent.rect.centerx
+        self.rect.centery = self.parent.rect.centery - 600
+        self.dir = dir
+        self.image.fill(self.COLOR)
 
-
+    def update(self):
+        if not self.parent.alive():
+            self.kill()
+            
+        if self.parent.duration <=15:
+            self.rect.centery = self.parent.rect.centery - (20 * self.parent.duration)
