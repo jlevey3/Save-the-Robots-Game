@@ -8,11 +8,56 @@ from player import Player
 from robots import *
 from meteors import * # Meteor, Impact
 from app import ApplicationState, Application
+from text import TextBlock
 
 SCREEN_SIZE = 800,600
 BG_COLOR = 0,0,0
 pygame.init()
 
+class Instruction(ApplicationState):
+    fg_color = 25,255,55
+    bg_color = 0,0,0
+    
+    def setup(self):
+        font = pygame.font.Font(None, 30)
+        
+        tb = TextBlock(font, justify=TextBlock.LEFT)
+        self.text = tb.render("""
+Archibald the Robot lived a happy existence with his robo-family, 
+until one day their planet was bombarded by meteors! 
+Navigate Archie around the screen to help rescue his family members
+from falling meteors. 
+Move quickly to avoid the meteors.
+When Archie is carrying a family member, he will be significantly slowed.
+
+Controls: 
+ * Move around with W A S D keys.
+ * Space picks up family members. 
+ * ESC pauses the game.
+ * ESC + q brings you back to the menu screen.
+
+Hit <SPACE> to continue.
+
+Good luck!
+""".strip().split("\n"), True, self.fg_color, self.bg_color)
+
+                
+    def handle_event(self, event):
+        if event.type == KEYDOWN and event.key == K_ESCAPE:
+            self.app.quit()
+        elif event.type == KEYDOWN and event.key == K_SPACE:
+            self.app.set_state(MainMenu)
+
+    def draw(self, screen):
+        bounds = screen.get_rect()
+
+        screen.fill(self.bg_color)
+        
+        rect = self.text.get_rect()
+        rect.center = bounds.center
+        screen.blit(self.text, rect)
+        
+        
 class MainMenu(ApplicationState):
     fg_color = 25,255,55
     bg_color = 0,0,0
@@ -28,6 +73,7 @@ class MainMenu(ApplicationState):
         font.set_bold(False)
         font.set_italic(True)
         font.set_underline(False)
+        font = pygame.font.Font(None,30)
         self.inst = font.render("Press <SPACE> to Start", True, self.fg_color, self.bg_color)
 
     def resume(self):
@@ -107,13 +153,13 @@ class Game(ApplicationState):
     def handle_event(self, event):
         if event.type == KEYDOWN and event.key == K_ESCAPE:
             self.app.set_state(PauseMenu)
-        elif event.type == KEYDOWN and event.key == K_SPACE:
+        elif event.type == KEYDOWN and event.key == K_SPACE and not self.is_gameover():
             if self.player.carrying:
                 self.player.drop()
             else:
                 for robot in groupcollide(self.robot_grp, self.player_grp, False, False):
                     self.player.grab(robot)
-                    self.score += 5
+                    self.score += 50
                     print "robot picked up"
 
             
@@ -122,6 +168,9 @@ class Game(ApplicationState):
 	print "Loop Started"
 	
     def update(self):
+        if self.is_gameover():
+            self.player.kill()
+
         self.spawnticker += 1
         
         if self.spawnticker >= self.spawntime:
@@ -146,22 +195,34 @@ class Game(ApplicationState):
         coll = groupcollide(self.robot_grp, ImpactGroup.impacts, False, False)
         for robot in coll:
             robot.damage(coll[robot][0])
+            
+        #gameover
+    def is_gameover(self):
+        all_alive = self.player.alive()
+        for robot in self.robot_grp:
+            all_alive = all_alive and robot.alive()
 
+        return not all_alive
 
     def draw(self, screen):
 	screen.fill(BG_COLOR)
 	
-	self.robot_grp.draw(screen)
-	
+	self.robot_grp.draw(screen)	
+
 	ImpactGroup.impacts.draw(screen)
 	self.meteors.draw(screen)
 	self.player_grp.draw(screen)
 	self.robot_grp.draw(screen)
 	self.clock.tick(30)
+        lives_text = self.font.render("Lives: %01d"%self.player.lives, False, (255,255,255))
 	score_text = self.font.render("Score: %05d"%self.score, False, (255,255,255))
-	
+	screen.blit(lives_text, (200,5))
 	screen.blit(score_text, (5,5))
+        gameover_text = self.font.render("Game over! Your score is %05d. Hit ESC + q to return to main menu."%self.score, False, (255,255,255))
 
+        if self.is_gameover():
+            print "game over"
+            screen.blit(gameover_text, (10,350))
 
 
 	
