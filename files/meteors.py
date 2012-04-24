@@ -4,7 +4,7 @@ from pygame.sprite import Sprite, Group #sprites and groups!
 from random import randrange
 from robots import *
 from utils import *
-
+from resource import *
 
 def collide_meteor_shield(meteor, shield):
     return collide_rect_circle(meteor.rect, shield.rect.center, shield.rect.width/2)
@@ -86,6 +86,7 @@ class Meteor (Sprite):
 class IceMeteor(Meteor):
     size = 5,5
     COLOR = 0, 50, 155
+    #self.image = load_image('meteor_ice')
     def shieldcheck(self):
         if self.duration == 1:
             coll = pygame.sprite.spritecollide(self, ShieldGroup.shields, False, collide_meteor_shield)
@@ -204,6 +205,7 @@ class IceImpact (Meteor):
 
 # make impact group itself a Group().  Group is an object.  Make a new class for each element
 # of meteor
+#
 
 class FallingMeteor(Sprite):
     COLOR = 0,0,0

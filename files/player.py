@@ -10,6 +10,7 @@ class Player(Sprite):
     lives = 5
     size = 20,20
     speed = 7
+    health = 100
     speedmod_rad = 0 # default -2
     speedmod_carrying = 0 #default -2
     speedmods = [0,0] #element 0 is carried, element 1-X is environment.
@@ -54,20 +55,14 @@ class Player(Sprite):
         if self.carrying:
             self.carrying.rect.center = self.rect.center #clamps robot to player
     
-        if self.color[1]<255:
-            self.color = self.color[0], self.color[1]+1, self.color[2]+1 
-            self.image.fill(self.color)
-    
     
     def damage (self, source):
         "Applies damage effect unique to the robot.  source is the object, source_element is the damage type"
         if source.kind != "radiation":  
             print "player hit: ", source, " ", source.kind
-            #self.kill()
-                #if self.color[1]-10 < 0: #ensures a legal color
-            #self.kill()
-                #else:
-                #self.color = self.color[0], self.color[1]-10, self.color[2]-10  # NEED BETTER WAY TO DO THIS
-        #self.image.fill(self.color)
+            
         if source.kind == "rock":
             print "Player was hit by a rock!"
+            self.health -= 25
+        if self.health <= 0:
+            self.lives -= 1
