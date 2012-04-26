@@ -19,10 +19,11 @@ class Player(Sprite):
         Sprite.__init__(self)
         self.image = Surface(self.size)
         self.rect = self.image.get_rect()
-        self.image = load_image('icemeteor')
+        self.image = load_image('meteor_fire')
         self.rect.center = loc
         self.bounds = bounds
         self.carrying = None
+        #self.image.fill((255,255,255,.5))
     
     def grab(self, robot):
         if not self.carrying:

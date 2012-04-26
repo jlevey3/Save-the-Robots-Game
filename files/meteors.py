@@ -5,6 +5,7 @@ from random import randrange
 from robots import *
 from utils import *
 from resource import *
+from random import randint
 
 def collide_meteor_shield(meteor, shield):
     return collide_rect_circle(meteor.rect, shield.rect.center, shield.rect.width/2)
@@ -37,9 +38,8 @@ class Meteor (Sprite):
         self.bounds = bounds
         self.falltime = falltime
         self.kind = kind
-        if self.kind == "iron":
-            self.COLOR = 50,50,50
         self.image.fill(self.COLOR)
+        
         
         FallingGroup.fallings.add(FallingMeteor (self))
         #self.original_image = image.convert()
@@ -128,7 +128,21 @@ class IronMeteor(Meteor):
 #class Meteor_Fall(Sprite):
     
 
-
+class RadiationMeteor(Meteor):
+    COLOR = 255,255,255
+    size = 7,7
+    
+    
+    def update(self):
+        self.duration -= 1
+        self.checkshield()
+        if self.duration <= 0:
+            self.coord_x, self.coord_y = self.rect.center
+            self.kill()
+    
+    def kill(self):
+        ImpactGroup.impacts.add(RadiationImpact (self.rect.center, self.bounds, 4, self.kind))
+        Sprite.kill(self)
 
 
 
@@ -170,6 +184,12 @@ class Impact(Meteor):
 class RockImpact(Impact):
     COLOR = 110,110,110
     kind = "rock"
+    
+class RadiationImpact(Impact):
+    COLOR = 40,130,40
+    kind = "radiation"
+    duration = 60
+    size = (100,100)
 
 class IceImpact (Meteor):
     COLOR = 0,50,160
@@ -207,24 +227,44 @@ class IceImpact (Meteor):
 # of meteor
 #
 
+
+
 class FallingMeteor(Sprite):
     COLOR = 0,0,0
-    size = 20,20
+    size = 40,40
+    height = 1000
     def __init__(self, parent):
         print "Falling Meteor Created!"
         Sprite.__init__(self)
         self.parent = parent
+        self.kind = parent.kind
         self.COLOR = parent.COLOR
         self.image = Surface(self.size)
         self.rect = self.image.get_rect()
         self.rect.centerx = self.parent.rect.centerx
-        self.rect.centery = self.parent.rect.centery - 600
+        self.rect.centery = self.parent.rect.centery - self.height
         self.dir = dir
-        self.image.fill(self.COLOR)
+        
+        
+        #-----------This will attempt to load an image, and fill if it fails.
+        try:
+            self.image = load_image('meteor_'+self.kind)
+        except:
+            self.image.fill(self.COLOR)
+        #Scale the image to the proper size and add random rotation
+        if randint(0,2) == 0:
+            self.image = pygame.transform.flip(self.image, True, False)
+        self.image = pygame.transform.rotate(self.image, randint(-360,360))
+        
+        self.image = pygame.transform.scale(self.image, self.size) #temp
+        #Anything that's pure white will be transparent
+        self.image.set_colorkey((255,255,255))
+        #-------
+        
 
     def update(self):
         if not self.parent.alive():
             self.kill()
             
-        if self.parent.duration <=15:
-            self.rect.centery = self.parent.rect.centery - (20 * self.parent.duration)
+        if self.parent.duration <=20:
+            self.rect.centery = self.parent.rect.centery - (self.parent.duration * 20)
