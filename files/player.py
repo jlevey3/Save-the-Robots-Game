@@ -23,7 +23,7 @@ class Player(Sprite):
         self.rect.center = loc
         self.bounds = bounds
         self.carrying = None
-    
+        
     def grab(self, robot):
         if not self.carrying:
             self.carrying = robot

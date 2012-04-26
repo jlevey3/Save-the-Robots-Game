@@ -1,10 +1,12 @@
 import pygame
+import os, sys
 from pygame import Surface
-from pygame.sprite import Sprite, Group #sprites and groups!
+from pygame.sprite import Sprite, Group
 from random import randrange
 from robots import *
 from utils import *
 from resource import *
+
 
 def collide_meteor_shield(meteor, shield):
     return collide_rect_circle(meteor.rect, shield.rect.center, shield.rect.width/2)
@@ -86,7 +88,9 @@ class Meteor (Sprite):
 class IceMeteor(Meteor):
     size = 5,5
     COLOR = 0, 50, 155
-    #self.image = load_image('meteor_ice')
+    #self.image = Surface(self.size)
+    #self.rect = self.image.get_rect()
+   # self.image = load_image('icemeteor')
     def shieldcheck(self):
         if self.duration == 1:
             coll = pygame.sprite.spritecollide(self, ShieldGroup.shields, False, collide_meteor_shield)

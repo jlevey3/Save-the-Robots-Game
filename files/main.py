@@ -10,6 +10,7 @@ from meteors import * # Meteor, Impact
 from app import ApplicationState, Application
 from text import TextBlock
 import os, sys
+from resource import *
 SCREEN_SIZE = 800,600
 BG_COLOR = 0,0,0
 pygame.init()
