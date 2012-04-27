@@ -9,6 +9,7 @@ from robots import *
 from meteors import * # Meteor, Impact
 from app import ApplicationState, Application
 from text import TextBlock
+import share
 import os, sys
 SCREEN_SIZE = 800,600
 BG_COLOR = 0,0,0
@@ -140,16 +141,18 @@ class Game(ApplicationState):
         self.font = pygame.font.Font(None,35)
     
 	self.player = Player(self.bounds.center, self.bounds) #sets starting position fir player
-	#robot = Robot((randrange(0,800),randrange(0,600)), self.bounds)
+	
+	
 	self.player_grp = GroupSingle(self.player)
+	setattr(share, "player", self.player_grp)
     #robot_grp = GroupSingle(robot)
     
-#	self.robot_grp.add(Robot((randrange(0,800),randrange(0,600)), self.bounds))
+	#self.robot_grp.add(Robot((randrange(0,800),randrange(0,600)), self.bounds))
 	self.robot_grp.add(Brotherbot((randrange(0,800),randrange(0,600)), self.bounds))
 	self.robot_grp.add(Fatherbot((randrange(0,800),randrange(0,600)), self.bounds))
-        self.robot_grp.add(Motherbot((randrange(0,800),randrange(0,600)), self.bounds))
 	self.meteors = Group()
 	self.impacts = Group()
+	setattr(share, "family", self.robot_grp)  # HAcky solution.
     
 	
 
@@ -192,6 +195,7 @@ class Game(ApplicationState):
         if self.spawnticker >= self.spawntime:
             #print "ICE SPAWNED"
             self.meteors.add(IceMeteor((randrange(0,800),randrange(0,600)),self.bounds, 90, "ice"))
+	    self.meteors.add(IronMeteor((randrange(0,800),randrange(0,600)),self.bounds, 300, "iron"))
 	    
         if self.spawnticker >= self.spawntime:
             #print "spawned!"
@@ -204,7 +208,8 @@ class Game(ApplicationState):
         self.player.update()
 	ShieldGroup.shields.update()
 	FallingGroup.fallings.update()
-        RoboGroup.robosprites.update()
+	RoboGroup.robosprites.update()
+    
 	#collisions
         coll = groupcollide(self.player_grp, ImpactGroup.impacts, False, False)
         for robot in coll:
@@ -231,9 +236,10 @@ class Game(ApplicationState):
 	ShieldGroup.shields.draw(screen)
 	self.meteors.draw(screen)
 	self.player_grp.draw(screen)
-        self.robot_grp.draw(screen)
+	self.robot_grp.draw(screen)
 	FallingGroup.fallings.draw(screen)
 	RoboGroup.robosprites.draw(screen)
+	
 	
 	self.clock.tick(30)
         lives_text = self.font.render("Lives: %01d"%self.player.lives, False, (255,255,255))

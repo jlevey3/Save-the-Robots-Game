@@ -19,7 +19,8 @@ class Player(Sprite):
         Sprite.__init__(self)
         self.image = Surface(self.size)
         self.rect = self.image.get_rect()
-        self.image = load_image('meteor_fire')
+        #self.image = load_image('archie')
+        self.image.fill(self.color)
         self.rect.center = loc
         self.bounds = bounds
         self.carrying = None
