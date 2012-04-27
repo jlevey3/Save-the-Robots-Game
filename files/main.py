@@ -140,13 +140,14 @@ class Game(ApplicationState):
         self.font = pygame.font.Font(None,35)
     
 	self.player = Player(self.bounds.center, self.bounds) #sets starting position fir player
-	robot = Robot((randrange(0,800),randrange(0,600)), self.bounds)
+	#robot = Robot((randrange(0,800),randrange(0,600)), self.bounds)
 	self.player_grp = GroupSingle(self.player)
     #robot_grp = GroupSingle(robot)
     
-	self.robot_grp.add(Robot((randrange(0,800),randrange(0,600)), self.bounds))
+#	self.robot_grp.add(Robot((randrange(0,800),randrange(0,600)), self.bounds))
 	self.robot_grp.add(Brotherbot((randrange(0,800),randrange(0,600)), self.bounds))
 	self.robot_grp.add(Fatherbot((randrange(0,800),randrange(0,600)), self.bounds))
+        self.robot_grp.add(Motherbot((randrange(0,800),randrange(0,600)), self.bounds))
 	self.meteors = Group()
 	self.impacts = Group()
     
@@ -203,7 +204,7 @@ class Game(ApplicationState):
         self.player.update()
 	ShieldGroup.shields.update()
 	FallingGroup.fallings.update()
-    
+        RoboGroup.robosprites.update()
 	#collisions
         coll = groupcollide(self.player_grp, ImpactGroup.impacts, False, False)
         for robot in coll:
@@ -230,9 +231,9 @@ class Game(ApplicationState):
 	ShieldGroup.shields.draw(screen)
 	self.meteors.draw(screen)
 	self.player_grp.draw(screen)
-	self.robot_grp.draw(screen)
+        self.robot_grp.draw(screen)
 	FallingGroup.fallings.draw(screen)
-	
+	RoboGroup.robosprites.draw(screen)
 	
 	self.clock.tick(30)
         lives_text = self.font.render("Lives: %01d"%self.player.lives, False, (255,255,255))

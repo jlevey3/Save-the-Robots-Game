@@ -5,9 +5,13 @@ from pygame.sprite import Sprite, Group
 from pygame import Surface
 from player import Player
 from app import *
+from resource import *
 
 class ShieldGroup(Group):
     shields = Group()
+
+class RoboGroup(Group):
+    robosprites = Group()
 
 class Shield(Sprite):
     color = 255,255,255
@@ -43,11 +47,15 @@ class Shield(Sprite):
     
 class Robot(Sprite):
     color = 255,255,0
-    size = 10,10
+    size = 20,20
     health = 1
     weight = 2
     iscarried = False
-    childshield = 0;
+    childshield = 0
+    name = "empty"
+    
+   
+
     def __init__(self,loc,bounds):
         Sprite.__init__(self)
         self.image = Surface(self.size)
@@ -55,14 +63,15 @@ class Robot(Sprite):
         self.rect.bottomleft = loc
         self.image.fill(self.color)
         self.makeshield()
-        
-#    def update(self):
+        self.sprite = RoboGroup.robosprites.add(RoboImages (self))
+#def update(self):
 
     def makeshield(self):
         return
     def update(self):
         keys = pygame.key.get_pressed()
         self.rect.clamp_ip(self.bounds)
+        childsprite.update
     
     def damage (self, source):
         if not self.immunitycheck(source):
@@ -70,7 +79,6 @@ class Robot(Sprite):
             print "robot hit"
             if self.health <= 0:
                 print "Robot killed"
-                #  Player.drop()  Ask Alec
                 self.kill()
     
     def immunitycheck(self, source):
@@ -78,10 +86,11 @@ class Robot(Sprite):
             
 
 class Fatherbot(Robot):
-    color = 255,122,0
-    size = 20,20
+    #color = 255,122,0
+    size = 15,15
     health = 2
     weight = 4
+    name = "father"
     
     def makeshield(self):
         self.childshield = Shield(self, "cigar")
@@ -96,16 +105,20 @@ class Fatherbot(Robot):
             return False
     
 class Motherbot(Robot):
-    color = 0,122,255
+    #color = 0,122,255
     size = 15,15
     health = 2
     weight = 3
+    name = "mother"
+   
 
 class Brotherbot(Robot):
-    color = 30,250,250
-    size = 10,10
+    #color = 30,250,250
+    size = 15,15
     health = 3
     weight = 3
+    name = "brother"
+    
     
     def makeshield(self):
         self.childshield = Shield(self, "baseball")
@@ -122,8 +135,41 @@ class Brotherbot(Robot):
             return False
 
 class Sisterbot(Robot):
-    color = 238,130,238
+   # color = 238,130,238
     size = 10,10
     health = 3
     weight = 2
+    name = "sister"
+
+
+class RoboImages(Sprite):
+    color = 0,0,0
+    size = 60,60
+    def __init__(self, parent):
+        Sprite.__init__(self)
+        self.parent = parent
+        self.name = parent.name
+        self.color = parent.color
+        self.image = Surface(self.size)
+        self.rect = self.image.get_rect()
+        self.rect.centerx = self.parent.rect.centerx
+        self.rect.centery = self.parent.rect.centery
+        self.dir = dir
     
+
+        try:
+            self.image = load_image(self.name+'bot')
+            print "found family sprite"
+        except:
+            self.image.fill(self.color)
+            print "failed to load family image"
+        
+        
+        self.image = pygame.transform.scale(self.image, self.size)
+        self.image.set_colorkey((255,255,255))
+        
+   
+    def update(self):
+        self.rect.center = self.parent.rect.center
+        if not self.parent.alive():
+            self.kill()
