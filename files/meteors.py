@@ -25,7 +25,7 @@ class FallingGroup(Group):
 class Meteor (Sprite):
     coord_x = 0
     coord_y = 0
-    size = (5,5)
+    size = (60,30)
     duration = 60
     child_effect = 0;
     COLOR = 255,0,0
@@ -40,11 +40,27 @@ class Meteor (Sprite):
         self.falltime = falltime
         self.kind = kind
         self.image.fill(self.COLOR)
+        self.get_sprite()
         
         
         FallingGroup.fallings.add(FallingMeteor (self))
         #self.original_image = image.convert()
+        
+    def get_sprite(self):
+        #-----------This will attempt to load an image, and fill if it fails.
+        try:
+            self.image = load_image('crosshair_'+self.kind)
+        except:
+            self.image.fill(self.COLOR)
+        #Scale the image to the proper size
+        
+        self.image = pygame.transform.scale(self.image, self.size) #temp
+        #Anything that's pure white will be transparent
+        self.image.set_colorkey((255,255,255))
+        #-------
+        
     def update(self):
+        
        
         self.duration -= 1
         self.checkshield()
@@ -72,20 +88,10 @@ class Meteor (Sprite):
                     pygame.draw.line(pygame.display.get_surface(), (255,0,0), self.rect.center, shield.rect.center, 3)
     
     def kill(self):
-        #self.explode = Surface(self.size)
-        if self.kind == "rock":
-            ImpactGroup.impacts.add(Impact (self.rect.center, self.bounds, 4, self.kind))
-        if self.kind == "ice":
-            ImpactGroup.impacts.add(IceImpact (self.rect.center, self.bounds, 30, self.kind, 0))
-            ImpactGroup.impacts.add(IceImpact (self.rect.center, self.bounds, 30, self.kind, 1))
-            ImpactGroup.impacts.add(IceImpact (self.rect.center, self.bounds, 30, self.kind, 2))
-            ImpactGroup.impacts.add(IceImpact (self.rect.center, self.bounds, 30, self.kind, 3))
-
-            
+        #self.explode = Surface(self.size)          
         Sprite.kill(self)
 
 class IceMeteor(Meteor):
-    size = 5,5
     COLOR = 0, 50, 155
     #self.image = load_image('meteor_ice')
     def shieldcheck(self):
@@ -97,12 +103,15 @@ class IceMeteor(Meteor):
                     pygame.draw.line(pygame.display.get_surface(), (255,0,0), self.rect.center, shield.rect.center, 3)
         
     def kill(self):
-        ImpactGroup.impacts.add(RockImpact (self.rect.center, self.bounds, 4, self.kind))
+        ImpactGroup.impacts.add(IceImpact (self.rect.center, self.bounds, 30, self.kind, 0))
+        ImpactGroup.impacts.add(IceImpact (self.rect.center, self.bounds, 30, self.kind, 1))
+        ImpactGroup.impacts.add(IceImpact (self.rect.center, self.bounds, 30, self.kind, 2))
+        ImpactGroup.impacts.add(IceImpact (self.rect.center, self.bounds, 30, self.kind, 3))
         Sprite.kill(self)
     
 class RockMeteor(Meteor):
     COLOR = 255,165,0
-    size = 5,5
+
     def shieldcheck(self):
         if self.duration == 1:
             coll = pygame.sprite.spritecollide(self, ShieldGroup.shields, False, collide_meteor_shield)
@@ -120,10 +129,11 @@ class RockMeteor(Meteor):
 
 class IronMeteor(Meteor):
     COLOR = 255,170,170
-    size = 7,7
+
     target = None
     speed = 1
     tracking_distance = 200
+    kind = "iron"
     def __init__(self, *args):
         Meteor.__init__(self, *args)
         import share
@@ -157,13 +167,18 @@ class IronMeteor(Meteor):
                     self.rect.y -= self.speed
                 elif self.rect.y < self.target.rect.y:
                     self.rect.y += self.speed
-                
+                    
+    def kill(self):
+        ImpactGroup.impacts.add(RockImpact (self.rect.center, self.bounds, 4, self.kind))
+        Sprite.kill(self)
+
+        
+
             
 
 class RadiationMeteor(Meteor):
     COLOR = 255,255,255
-    size = 7,7
-    
+    kind = "radiation"
     
     def update(self):
         self.duration -= 1
@@ -173,7 +188,7 @@ class RadiationMeteor(Meteor):
             self.kill()
     
     def kill(self):
-        ImpactGroup.impacts.add(RadiationImpact (self.rect.center, self.bounds, 4, self.kind))
+        ImpactGroup.impacts.add(RadiationImpact (self.rect.center, self.bounds, 60, self.kind))
         Sprite.kill(self)
 
 
@@ -198,8 +213,29 @@ class Impact(Meteor):
         self.bounds = bounds
         self.duration = duration
         self.kind = kind
-        if kind == "rock":
-            self.duration = 10
+        self.get_sprite()
+        
+    def get_sprite(self):
+        return
+        """
+        #-----------This will attempt to load an image, and fill if it fails.
+        try:
+            self.image = load_image('explosion_'+self.kind)
+        except:
+            self.image.fill(self.COLOR)
+        #Scale the image to the proper size and add random rotation
+        if randint(0,2) == 0:
+            self.image = pygame.transform.flip(self.image, True, False)
+        self.image = pygame.transform.rotate(self.image, randint(-360,360))
+        
+        self.image = pygame.transform.scale(self.image, self.size) #temp
+        #Anything that's pure white will be transparent
+        self.image.set_colorkey((255,255,255))
+        #-------
+        
+        """
+        
+        
     def update(self):
         self.duration -= 1
         if self.duration <= 0:
@@ -220,7 +256,7 @@ class RockImpact(Impact):
 
     
 class RadiationImpact(Impact):
-    COLOR = 40,130,40
+    COLOR = 60,255,60
     kind = "radiation"
     duration = 60
     size = (100,100)
@@ -268,7 +304,6 @@ class FallingMeteor(Sprite):
     size = 40,40
     height = 1000
     def __init__(self, parent):
-        print "Falling Meteor Created!"
         Sprite.__init__(self)
         self.parent = parent
         self.kind = parent.kind
@@ -278,8 +313,9 @@ class FallingMeteor(Sprite):
         self.rect.centerx = self.parent.rect.centerx
         self.rect.centery = self.parent.rect.centery - self.height
         self.dir = dir
+        self.get_sprite()
         
-        
+    def get_sprite(self):
         #-----------This will attempt to load an image, and fill if it fails.
         try:
             self.image = load_image('meteor_'+self.kind)
@@ -303,3 +339,23 @@ class FallingMeteor(Sprite):
         if self.parent.duration <=20:
             self.rect.centery = self.parent.rect.centery - (self.parent.duration * 20)
             self.rect.centerx = self.parent.rect.centerx
+
+class Crosshair(FallingMeteor):
+    height = 0
+    size = (60,30)
+    
+    def update():
+        if not self.parent.alive():
+            self.kill()
+            
+    def get_sprite(self):
+        #-----------This will attempt to load an image, and fill if it fails.
+        try:
+            self.image = load_image('crosshair_'+self.kind)
+        except:
+            self.image.fill(self.COLOR)
+        #Scale the image to the proper size and add random rotation
+        self.image = pygame.transform.scale(self.image, self.size) #temp
+        #Anything that's pure white will be transparent
+        self.image.set_colorkey((255,255,255))
+        #-------

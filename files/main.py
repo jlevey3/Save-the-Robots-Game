@@ -194,8 +194,9 @@ class Game(ApplicationState):
         
         if self.spawnticker >= self.spawntime:
             #print "ICE SPAWNED"
-            self.meteors.add(IceMeteor((randrange(0,800),randrange(0,600)),self.bounds, 90, "ice"))
+            self.meteors.add(RadiationMeteor((randrange(0,800),randrange(0,600)),self.bounds, 90, "radiation"))
 	    self.meteors.add(IronMeteor((randrange(0,800),randrange(0,600)),self.bounds, 300, "iron"))
+	    
 	    
         if self.spawnticker >= self.spawntime:
             #print "spawned!"

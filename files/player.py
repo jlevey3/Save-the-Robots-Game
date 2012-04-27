@@ -36,11 +36,13 @@ class Player(Sprite):
         self.speedmods[0] = 0
 
     def update(self):
+        if self.carrying == None:
+            self.speedmods[0] = 0
         speedtotal = 0
         for element in self.speedmods[:]:
             speedtotal += element
-        if self.speed + speedtotal < 0:
-            speedtotal = self.speed
+        if self.speed + speedtotal <= 0:
+            speedtotal = -self.speed + 1
         keys = pygame.key.get_pressed()
         if keys[K_DOWN] or keys[K_s]:
             self.rect.y += (self.speed + speedtotal)
@@ -50,6 +52,8 @@ class Player(Sprite):
             self.rect.x += -(self.speed + speedtotal)
         if keys[K_RIGHT] or keys[K_d]:
             self.rect.x += (self.speed + speedtotal)
+        
+        self.speedmods[1] = 0
 
         self.rect.clamp_ip(self.bounds) #stays within bounds
 
@@ -59,7 +63,7 @@ class Player(Sprite):
     
     
     def damage (self, source):
-        "Applies damage effect unique to the robot.  source is the object, source_element is the damage type"
+        "Applies damage effect unique to the robot.  source is the object, source.kind is the damage type"
         if source.kind != "radiation":  
             print "player hit: ", source, " ", source.kind
             
@@ -68,3 +72,5 @@ class Player(Sprite):
             self.health -= 25
         if self.health <= 0:
             self.lives -= 1
+        if source.kind == "radiation":
+            self.speedmods[1] = -4

@@ -82,7 +82,10 @@ class Robot(Sprite):
                 self.kill()
     
     def immunitycheck(self, source):
-        return False
+        if source.kind =="radiation":
+            return True
+        else:
+            return False
             
 
 class Fatherbot(Robot):
@@ -100,6 +103,8 @@ class Fatherbot(Robot):
     def immunitycheck(self, source):
         if source.kind == "ice" or source.kind == "coal":
             pygame.draw.line(pygame.display.get_surface(), (255,0,0), self.rect.center, source.rect.center, 3)
+            return True
+        elif source.kind == "radiation":
             return True
         else:
             return False
@@ -130,6 +135,8 @@ class Brotherbot(Robot):
     def immunitycheck(self, source):
         if source.kind == "rock":
             pygame.draw.line(pygame.display.get_surface(), (255,0,0), self.rect.center, source.rect.center, 3)
+            return True
+        elif source.kind == "radiation":
             return True
         else:
             return False
