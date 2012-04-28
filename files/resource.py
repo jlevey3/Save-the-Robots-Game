@@ -24,3 +24,11 @@ def load_image(name):
         _images[name] = pygame.image.load(path)
 
     return _images[name].convert()
+
+_sfx = {}
+def load_sfx(name):
+    if name not in _sfx:
+        path = os.path.join(SFX_DIR, name + ".ogg")
+        _sfx[name] = pygame.mixer.Sound(path)
+        
+    return _sfx[name]

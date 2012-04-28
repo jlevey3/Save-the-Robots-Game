@@ -11,6 +11,8 @@ from app import ApplicationState, Application
 from text import TextBlock
 import share
 import os, sys
+from resource import *
+
 SCREEN_SIZE = 800,600
 BG_COLOR = 0,0,0
 pygame.init()
@@ -18,9 +20,11 @@ pygame.init()
 class Instruction(ApplicationState):
     fg_color = 25,255,55
     bg_color = 0,0,0
+    song = "menumusic"
     
     def setup(self):
-        font = pygame.font.Font(None, 30)
+        play_song(self.song)
+	font = pygame.font.Font(None, 30)
         
         tb = TextBlock(font, justify=TextBlock.LEFT)
         self.text = tb.render("""
@@ -128,6 +132,7 @@ class Game(ApplicationState):
     foo = "foo"
     
     def setup (self):
+	pygame.mixer.music.stop
 	self.SCREEN_SIZE = SCREEN_SIZE
 	self.BG_COLOR = BG_COLOR
 	self.score = 0
