@@ -78,7 +78,7 @@ class MainMenu(ApplicationState):
 
         font.set_bold(True)
         font.set_underline(True)
-        self.title = font.render("ROCKS AND ROBOTS", True, self.fg_color, self.bg_color)
+        self.title = font.render("", True, self.fg_color, self.bg_color)
 
         font.set_bold(False)
         font.set_italic(True)
