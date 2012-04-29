@@ -23,8 +23,6 @@ class FallingGroup(Group):
     
 
         
-
-        
 class Meteor (Sprite):
     coord_x = 0
     coord_y = 0
@@ -152,7 +150,7 @@ class IronMeteor(Meteor):
         # Homing!
         if self.target == None:
             distances = []
-            #go for a coordinate, not sn object
+            #go for a coordinate, not an object
             for robot in self.robotlist:
                 distances.append((distance(self,robot), robot))
             distances.sort()
@@ -223,7 +221,7 @@ class Impact(Meteor):
 #        self.imact_sfx.play()
     def get_sprite(self):
         return
-        """
+    """
         #-----------This will attempt to load an image, and fill if it fails.
         try:
             self.image = load_image('explosion_'+self.kind)
@@ -269,6 +267,7 @@ class RadiationImpact(Impact):
 
 class IceImpact (Meteor):
     COLOR = 0,50,160
+    kind = "ice"
     duration = 30
     size = (30,30)
     def update(self):

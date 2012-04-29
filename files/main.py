@@ -214,6 +214,7 @@ class Game(ApplicationState):
     def update(self):
         if self.is_gameover():
             self.player.kill()
+
 	
 	self.spawnticker += 1
 	
