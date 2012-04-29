@@ -72,7 +72,7 @@ class MainMenu(ApplicationState):
     flash_rate = 500
 
     def setup(self):
-	self.titleimage = load_image_png("logo")
+	self.titleimage = load_image("logo")
 	self.titleimage.set_colorkey((255,255,255))
         font = pygame.font.Font(None, 70)
 
@@ -145,7 +145,7 @@ class Game(ApplicationState):
 	self.spawntime = 10
 	self.spawnticker = 0
 	self.robot_grp = RoboGroup.robots
-	self.BG_IMAGE = load_image_png("background1")
+	self.BG_IMAGE = load_image("background1")
 	
 	self.bounds = self.app.screen.get_rect()
         self.font = pygame.font.Font(None,35)
