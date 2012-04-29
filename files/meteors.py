@@ -8,6 +8,7 @@ from resource import *
 from random import randint
 import math
 
+
 def collide_meteor_shield(meteor, shield):
     return collide_rect_circle(meteor.rect, shield.rect.center, shield.rect.width/2)
     
@@ -19,6 +20,8 @@ class ImpactGroup(Group):
 
 class FallingGroup(Group):
     fallings = Group()
+    
+
         
 
         

@@ -24,6 +24,13 @@ def load_image(name):
         _images[name] = pygame.image.load(path)
 
     return _images[name].convert()
+    
+def load_image_png(name):
+    if name not in _images:
+        path = os.path.join(IMG_DIR, name + ".png")
+        _images[name] = pygame.image.load(path)
+
+    return _images[name].convert()
 
 _sfx = {}
 def load_sfx(name):

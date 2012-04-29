@@ -11,6 +11,7 @@ class ShieldGroup(Group):
     shields = Group()
 
 class RoboGroup(Group):
+    robots = Group()
     robosprites = Group()
 
 class Shield(Sprite):

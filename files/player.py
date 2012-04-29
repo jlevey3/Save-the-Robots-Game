@@ -9,7 +9,7 @@ class Player(Sprite):
     color = 255,255,255
     lives = 5
     size = 20,20
-    speed = 7
+    speed = 8
     health = 100
     speedmod_rad = 0 # default -2
     speedmod_carrying = 0 #default -2

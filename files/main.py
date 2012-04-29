@@ -12,6 +12,9 @@ from text import TextBlock
 import share
 import os, sys
 from resource import *
+import addrobots
+import meteorspawn
+from meteorspawn import MeteorGroup
 
 SCREEN_SIZE = 800,600
 BG_COLOR = 0,0,0
@@ -69,6 +72,8 @@ class MainMenu(ApplicationState):
     flash_rate = 500
 
     def setup(self):
+	self.titleimage = load_image_png("logo")
+	self.titleimage.set_colorkey((255,255,255))
         font = pygame.font.Font(None, 70)
 
         font.set_bold(True)
@@ -105,6 +110,7 @@ class MainMenu(ApplicationState):
         rect = self.title.get_rect()
         rect.center = bounds.centerx, bounds.centery - bounds.height / 4
         screen.blit(self.title, rect)
+	screen.blit(self.titleimage, (0,0))
 
         if self.draw_inst:
             rect = self.inst.get_rect()
@@ -138,24 +144,38 @@ class Game(ApplicationState):
 	self.score = 0
 	self.spawntime = 10
 	self.spawnticker = 0
-	self.robot_grp = Group()
+	self.robot_grp = RoboGroup.robots
+	self.BG_IMAGE = load_image_png("background1")
+	
+	self.bounds = self.app.screen.get_rect()
+        self.font = pygame.font.Font(None,35)
+	
 	ImpactGroup.impacts = Group()
 	ShieldGroup.shields = Group()
+	MeteorGroup.meteors = Group()
+	
+	#creates a new meteor spawner
+	self.MeteorSpawner = meteorspawn.MeteorSpawner()
+	self.MeteorSpawner.bounds = self.bounds
 
-        self.bounds = self.app.screen.get_rect()
-        self.font = pygame.font.Font(None,35)
+	
+        
     
 	self.player = Player(self.bounds.center, self.bounds) #sets starting position fir player
 	
 	
 	self.player_grp = GroupSingle(self.player)
 	setattr(share, "player", self.player_grp)
-    #robot_grp = GroupSingle(robot)
+
     
-	#self.robot_grp.add(Robot((randrange(0,800),randrange(0,600)), self.bounds))
-	self.robot_grp.add(Brotherbot((randrange(0,800),randrange(0,600)), self.bounds))
-	self.robot_grp.add(Fatherbot((randrange(0,800),randrange(0,600)), self.bounds))
-	self.meteors = Group()
+	#THIS FILE CONTROLS WHAT ROBOTS APPEAR AT GAME START
+	import addrobots
+	addrobots.addrobots(self.bounds)
+	#----------------------
+	
+	
+	
+	self.meteors = MeteorGroup.meteors
 	self.impacts = Group()
 	setattr(share, "family", self.robot_grp)  # HAcky solution.
     
@@ -194,9 +214,12 @@ class Game(ApplicationState):
     def update(self):
         if self.is_gameover():
             self.player.kill()
-
-        self.spawnticker += 1
+	
+	self.spawnticker += 1
+	
+	
         
+        """
         if self.spawnticker >= self.spawntime:
             #print "ICE SPAWNED"
             self.meteors.add(RadiationMeteor((randrange(0,800),randrange(0,600)),self.bounds, 90, "radiation"))
@@ -207,8 +230,9 @@ class Game(ApplicationState):
             #print "spawned!"
             self.meteors.add(RockMeteor((randrange(0,800),randrange(0,600)),self.bounds, 90, "rock"))
             self.spawnticker = 0
-		
+	"""	
 	#update
+	self.MeteorSpawner.spawn()
         self.meteors.update()
         ImpactGroup.impacts.update()
         self.player.update()
@@ -235,7 +259,8 @@ class Game(ApplicationState):
 
     def draw(self, screen):
 	screen.fill(BG_COLOR)
-	
+    
+	screen.blit(self.BG_IMAGE,(0,0))
 	self.robot_grp.draw(screen)	
 
 	ImpactGroup.impacts.draw(screen)
@@ -252,6 +277,7 @@ class Game(ApplicationState):
 	score_text = self.font.render("Score: %05d"%self.score, False, (255,255,255))
 	screen.blit(lives_text, (200,5))
 	screen.blit(score_text, (5,5))
+
         gameover_text = self.font.render("Game over! Your score is %05d. Hit ESC + q to return to main menu."%self.score, False, (255,255,255))
 
         if self.is_gameover():
