@@ -218,7 +218,7 @@ class Impact(Meteor):
     COLOR = 0,140,0
     duration = 5
     dir = 0
- #   impact_sfx = load_sfx("stockmeteorhit")
+    
     def __init__(self,loc, bounds, duration, kind, dir = 0):
         
         #print "explosion!"
@@ -233,9 +233,10 @@ class Impact(Meteor):
         self.duration = duration
         self.kind = kind
         self.get_sprite()
-#        self.imact_sfx.stop()
+        self.impact_sfx = load_sfx("lowhit")
+        self.impact_sfx.stop()
 
-#        self.imact_sfx.play()
+        self.impact_sfx.play()
     def get_sprite(self):
         #return
 

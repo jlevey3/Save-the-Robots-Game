@@ -36,7 +36,7 @@ class Player(Sprite):
         self.carrying = None
         self.sprite = PlayerSprite.sprite.add(Animation(self))
         #self.image.fill((255,255,255,.5))
-       
+        self.death_sfx = load_sfx("brotherbotdeath")       
     
     def grab(self, robot):
         if not self.carrying:
@@ -84,6 +84,8 @@ class Player(Sprite):
         #self.image = self.animation[self.carrying][self.direction][self.anim_frame]
     
     def damage (self, source):
+        self.death_sfx.stop()
+        self.death_sfx.play()
         "Applies damage effect unique to the robot.  source is the object, source.kind is the damage type"
         if source.kind != "radiation":  
             print "player hit: ", source, " ", source.kind

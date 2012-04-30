@@ -65,6 +65,7 @@ class Robot(Sprite):
         self.image.fill(self.color)
         self.makeshield()
         self.sprite = RoboGroup.robosprites.add(RoboImages (self))
+        self.death_sfx = load_sfx("brotherbotdeath")
 #def update(self):
 
     def makeshield(self):
@@ -81,6 +82,8 @@ class Robot(Sprite):
             if self.health <= 0:
                 print "Robot killed"
                 self.kill()
+                self.death_sfx.stop()
+                self.death_sfx.play()
     
     def immunitycheck(self, source):
         if source.kind =="radiation":

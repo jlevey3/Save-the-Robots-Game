@@ -26,6 +26,7 @@ class Instruction(ApplicationState):
     song = "menumusic"
     
     def setup(self):
+	pygame.mixer.music.set_volume(0.50)
         play_song(self.song)
 	font = pygame.font.Font(None, 30)
         
