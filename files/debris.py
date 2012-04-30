@@ -21,15 +21,20 @@ class Debris (Sprite):
     def __init__(self, source, vx = 30, vy = -10):
         self.vx = randrange(-30,30)
         self.vy = vy
+        self.source = source
         Sprite.__init__(self)
         self.size = source.size
-        self.image = Surface(self.size)
-        self.image = source.image
+        self.get_sprite()
         #self.image.fill((200,200,200))
         self.rect = self.image.get_rect()
         self.rect.center = source.rect.center
         print "debris created"
         
+    def get_sprite(self):
+        self.image = Surface(self.size)
+        self.image = self.source.image
+    
+    
     def update(self):
         
         self.rect.x += self.vx
@@ -39,4 +44,9 @@ class Debris (Sprite):
         if self.rect.y >= 700 or self.rect.x >= 800 or self.rect.x <= -100:
             self.kill()
         
+class Gear (Debris):
+    def get_sprite(self):
+        self.image = Surface(self.size)
+        self.image = load_image("gear")
+        self.image.set_colorkey((255,255,255))
         

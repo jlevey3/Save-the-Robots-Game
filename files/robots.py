@@ -6,6 +6,7 @@ from pygame import Surface
 from player import Player
 from app import *
 from resource import *
+from debris import *
 
 class ShieldGroup(Group):
     shields = Group()
@@ -85,6 +86,7 @@ class Robot(Sprite):
         if not self.immunitycheck(source):
             self.health -= source.damage
             print "robot hit"
+            DebrisGroup.debris.add(Gear(self))
             if self.health <= 0:
                 print "Robot killed"
                 self.kill()
