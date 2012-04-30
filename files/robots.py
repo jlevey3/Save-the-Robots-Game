@@ -28,6 +28,8 @@ class Shield(Sprite):
             self.color = 0,90,90
         elif kind == "cigar":
             self.color = 255,100,0
+        elif kind == "health":
+            self.color = 180, 200, 180
         self.image = Surface(self.size)
         self.rect = self.image.get_rect()
         self.rect.center = self.parent.rect.center
@@ -96,6 +98,7 @@ class Robot(Sprite):
             return False
             
 
+
 class Fatherbot(Robot):
     #color = 255,122,0
     size = 20,20
@@ -126,6 +129,11 @@ class Motherbot(Robot):
     weight = 3
     name = "mother"
     
+    def makeshield(self):
+        self.childshield = Shield(self, "health")
+        ShieldGroup.shields.add(self.childshield)
+        
+
     def get_sound(self):
         self.death_sfx = load_sfx("motherbotdeath")
 
