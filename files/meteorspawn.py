@@ -61,7 +61,8 @@ class MeteorSpawner(object):
             MeteorGroup.meteors.add(RadiationMeteor((randrange(0,800),randrange(0,600)),self.bounds, 100, "radiation"))
     
     def spawn_fire(self):
-        return 7
+	if self.spawnticker  % self.frequency_fire == 0: 
+            MeteorGroup.meteors.add(FireMeteor((randrange(0,800),randrange(0,600)),self.bounds, 100, "fire"))
     
     def spawn_gold(self):
         return 8

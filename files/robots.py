@@ -91,7 +91,7 @@ class Robot(Sprite):
 
 class Fatherbot(Robot):
     #color = 255,122,0
-    size = 15,15
+    size = 20,20
     health = 2
     weight = 4
     name = "father"
@@ -112,7 +112,7 @@ class Fatherbot(Robot):
     
 class Motherbot(Robot):
     #color = 0,122,255
-    size = 15,15
+    size = 20,20
     health = 2
     weight = 3
     name = "mother"
@@ -144,7 +144,7 @@ class Brotherbot(Robot):
 
 class Sisterbot(Robot):
    # color = 238,130,238
-    size = 10,10
+    size = 20,20
     health = 3
     weight = 2
     name = "sister"

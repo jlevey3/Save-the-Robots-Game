@@ -109,6 +109,8 @@ class IceMeteor(Meteor):
         ImpactGroup.impacts.add(IceImpact (self.rect.center, self.bounds, 30, self.kind, 2))
         ImpactGroup.impacts.add(IceImpact (self.rect.center, self.bounds, 30, self.kind, 3))
         Sprite.kill(self)
+        
+    
     
 class RockMeteor(Meteor):
     COLOR = 255,165,0
@@ -194,6 +196,20 @@ class RadiationMeteor(Meteor):
 
 
 
+class FireMeteor(Meteor):
+    COLOR = 255,255,255
+    kind = "fire"
+    
+    def update(self):
+        self.duration -= 1
+        self.checkshield()
+        if self.duration <= 0:
+            self.coord_x, self.coord_y = self.rect.center
+            self.kill()
+    
+    def kill(self):
+        ImpactGroup.impacts.add(FireImpact (self.rect.center, self.bounds, 60, self.kind))
+        Sprite.kill(self)
 
 
         
@@ -201,11 +217,12 @@ class Impact(Meteor):
     size = (100,100)
     COLOR = 0,140,0
     duration = 5
+    dir = 0
  #   impact_sfx = load_sfx("stockmeteorhit")
-    def __init__(self,loc, bounds, duration, kind):
+    def __init__(self,loc, bounds, duration, kind, dir = 0):
         
         #print "explosion!"
-        
+        self.dir = dir
         # Ice should have moving impacts
         Sprite.__init__(self)
         self.image = Surface(self.size)
@@ -220,24 +237,26 @@ class Impact(Meteor):
 
 #        self.imact_sfx.play()
     def get_sprite(self):
-        return
-    """
+        #return
+
         #-----------This will attempt to load an image, and fill if it fails.
         try:
             self.image = load_image('explosion_'+self.kind)
+            print "impact explosion yay"
         except:
             self.image.fill(self.COLOR)
+            print "failed to find explosion"
         #Scale the image to the proper size and add random rotation
-        if randint(0,2) == 0:
-            self.image = pygame.transform.flip(self.image, True, False)
-        self.image = pygame.transform.rotate(self.image, randint(-360,360))
+        #if randint(0,2) == 0:
+        #    self.image = pygame.transform.flip(self.image, True, False)
+        #self.image = pygame.transform.rotate(self.image, randint(-360,360))
         
         self.image = pygame.transform.scale(self.image, self.size) #temp
         #Anything that's pure white will be transparent
         self.image.set_colorkey((255,255,255))
         #-------
         
-        """
+        
         
         
     def update(self):
@@ -264,21 +283,64 @@ class RadiationImpact(Impact):
     kind = "radiation"
     duration = 60
     size = (100,100)
+    
+    def get_sprite(self):
+        #return
 
-class IceImpact (Meteor):
+        #-----------This will attempt to load an image, and fill if it fails.
+        try:
+            self.image = load_image('radiationcloud')
+            print "impact explosion yay"
+        except:
+            self.image.fill(self.COLOR)
+            print "failed to find explosion"
+        #Scale the image to the proper size and add random rotation
+        
+        
+        self.image = pygame.transform.scale(self.image, self.size) #temp
+        #Anything that's pure white will be transparent
+        self.image.set_colorkey((255,255,255))
+        #-------
+    
+class FireImpact(Impact):
+    COLOR = 60,255,60
+    kind = "Fire"
+    duration = 60
+    size = (160,160)
+    
+    def get_sprite(self):
+        #return
+
+        #-----------This will attempt to load an image, and fill if it fails.
+        try:
+            self.image = load_image('coals')
+            print "impact explosion yay"
+        except:
+            self.image.fill(self.COLOR)
+            print "failed to find explosion"
+        #Scale the image to the proper size and add random rotation
+        
+        
+        self.image = pygame.transform.scale(self.image, self.size) #temp
+        #Anything that's pure white will be transparent
+        self.image.set_colorkey((255,255,255))
+
+
+class IceImpact (Impact):
     COLOR = 0,50,160
     kind = "ice"
     duration = 30
     size = (30,30)
     def update(self):
         self.duration -= 1
-        if self.dir == 0:
+        
+        if self.dir == 0: # Left
             self.rect.x -= 5
-        if self.dir == 1:
+        if self.dir == 1: # Up
             self.rect.y -= 5
-        if self.dir == 2:
+        if self.dir == 3: # Right
             self.rect.y += 5
-        if self.dir == 3:
+        if self.dir == 2: # South
             self.rect.x += 5
         # 0 = West, 1 = North, 2 = East, 3 = South
         self.checkshield()
@@ -297,10 +359,30 @@ class IceImpact (Meteor):
                     
     def kill(self):    
         Sprite.kill(self)
+    
+    def get_sprite(self):
+        #-----------This will attempt to load an image, and fill if it fails.
+        try:
+            self.image = load_image('explosion_ice_'+str(self.dir))
+            #print "found sprite"
+        except:
+            self.image.fill(self.COLOR)
+            #print "failed sprite"
+        #Scale the image to the proper size
+        if self.dir == 0 or self.dir == 2: # Left
+            self.size = (30,20)
+        if self.dir == 1 or self.dir == 3: # Up
+            self.size = (20,30)
+        self.image = pygame.transform.scale(self.image, self.size) #temp
+        #Anything that's pure white will be transparent
+        self.image.set_colorkey((255,255,255))
+        #-------
 
 # make impact group itself a Group().  Group is an object.  Make a new class for each element
 # of meteor
 #
+
+
 
 
 
