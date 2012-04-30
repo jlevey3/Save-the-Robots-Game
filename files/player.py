@@ -16,6 +16,7 @@ class Player(Sprite):
     size = 20,20
     speed = 8
     health = 100
+    anim_counter = 1
     anim_frame = 0
     sprite = 0
     dir = 0
@@ -36,7 +37,8 @@ class Player(Sprite):
         self.carrying = None
         self.sprite = PlayerSprite.sprite.add(Animation(self))
         #self.image.fill((255,255,255,.5))
-        self.death_sfx = load_sfx("brotherbotdeath")       
+        self.death_sfx = load_sfx("brotherbotdeath")
+       
     
     def grab(self, robot):
         if not self.carrying:
@@ -48,6 +50,7 @@ class Player(Sprite):
         self.speedmods[0] = 0
 
     def update(self):
+       
         if self.carrying == None:
             self.speedmods[0] = 0
         speedtotal = 0
@@ -59,19 +62,30 @@ class Player(Sprite):
         if keys[K_DOWN] or keys[K_s]:
             self.dir = 2
             self.rect.y += (self.speed + speedtotal)
+        
         if keys[K_UP] or keys[K_w]:
             self.dir = 0
             self.rect.y += -(self.speed + speedtotal)
+            
         if keys[K_LEFT] or keys[K_a]:
             self.dir = 3
             self.rect.x += -(self.speed + speedtotal)
+           
         if keys[K_RIGHT] or keys[K_d]:
             self.dir = 1
             self.rect.x += (self.speed + speedtotal)
+           
+
+        if keys [K_DOWN] or keys[K_s] or keys[K_LEFT] or keys[K_a] or keys[K_RIGHT] or keys[K_d] or keys[K_UP] or keys[K_w]:
+            self.anim_counter += 1
         else:
+            self.anim_counter = 1
             self.anim_frame = 0
+            
+        if self.anim_counter % 3 == 0:
+            self.anim_frame +=1
         
-        if self.anim_frame == 3:
+        if self.anim_frame >= 3:
             self.anim_frame = 0
         self.speedmods[1] = 0
 
@@ -125,6 +139,16 @@ class Animation(Sprite):
             self.image.fill(self.color)
     
 
+
+    def update(self):
+        self.image = self.anim_array[0][self.parent.dir][self.parent.anim_frame]
+        self.image = pygame.transform.scale(self.image, self.size)
+        self.image.set_colorkey((255,255,255))
+        self.rect.center = self.parent.rect.center
+        
+        if not self.parent.alive():
+            self.kill()
+
     def get_anims(self):
         self.anim_array = [[],[]]
         self.anim_array[0].append([]) 
@@ -142,24 +166,18 @@ class Animation(Sprite):
         for i in range(0,5):
             self.anim_array[0][3].append(load_image("Archie/left_"+str(i)))
         self.anim_array[0].append([])
+
         for i in range(0,5):
-            self.anim_array[0][0].append(load_image("Archie/carry_forward_"+str(i)))
+            self.anim_array[0][0].append(load_image("Archie/carry_back_"+str(i)))
         self.anim_array[0].append([])
         for i in range(0,5):
             self.anim_array[0][1].append(load_image("Archie/carry_right_"+str(i)))
         self.anim_array[0].append([])
         for i in range(0,5):
-            self.anim_array[0][2].append(load_image("Archie/carry_back_"+str(i)))
+            self.anim_array[0][2].append(load_image("Archie/carry_forward_"+str(i)))
         self.anim_array[0].append([]) 
         for i in range(0,5):
             self.anim_array[0][3].append(load_image("Archie/carry_left_"+str(i)))
         self.anim_array[0].append([])
 
-    def update(self):
-        self.image = self.anim_array[0][self.parent.dir][self.parent.anim_frame]
-        self.image = pygame.transform.scale(self.image, self.size)
-        self.image.set_colorkey((255,255,255))
-        self.rect.center = self.parent.rect.center
-        
-        if not self.parent.alive():
-            self.kill()
+    
