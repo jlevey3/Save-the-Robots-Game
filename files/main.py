@@ -293,7 +293,8 @@ class GameOver(ApplicationState):
 GAME OVER! 
 Your score is: %d
 
-Hit ESC + q to quit
+Hit ESC to quit
+
 or <space> to return to the Main Menu!
 """ % self.app.state.timer).strip().split("\n"), True, self.fg_color, self.bg_color)
 
