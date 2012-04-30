@@ -45,7 +45,6 @@ class MeteorSpawner(object):
             MeteorGroup.meteors.add(RockMeteor((randrange(0,800),randrange(0,600)),self.bounds, 100, "rock"))
             #optional: self.frequency_rock += (randrange(-3,3)).  Provides variation.
             
-        
     
     def spawn_ice(self):
         if self.spawnticker % self.frequency_ice == 0:
