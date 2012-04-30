@@ -127,6 +127,7 @@ class Game(ApplicationState):
     foo = "foo"
     
     def setup (self):
+        print "STARTING LEVEL"
 	pygame.mixer.music.stop
 	self.SCREEN_SIZE = SCREEN_SIZE
 	self.BG_COLOR = BG_COLOR
@@ -139,9 +140,13 @@ class Game(ApplicationState):
 	self.bounds = self.app.screen.get_rect()
         self.font = pygame.font.Font(None,35)
 	
-	ImpactGroup.impacts = Group()
-	ShieldGroup.shields = Group()
-	MeteorGroup.meteors = Group()
+	ImpactGroup.impacts.empty()
+	ShieldGroup.shields.empty()
+	MeteorGroup.meteors.empty()
+        RoboGroup.robosprites.empty()
+        PlayerSprite.sprite.empty()
+        self.robot_grp.empty()
+        
 	
 	#creates a new meteor spawner
 	self.MeteorSpawner = meteorspawn.MeteorSpawner()
@@ -174,7 +179,7 @@ class Game(ApplicationState):
     def handle_event(self, event):
         if event.type == KEYDOWN and event.key == K_ESCAPE:
             self.app.set_state(PauseMenu)
-        elif event.type == KEYDOWN and event.key == K_SPACE and not self.is_gameover():
+        elif event.type == KEYDOWN and event.key == K_SPACE:
             if self.player.carrying:
                 self.player.drop()
             else:
@@ -198,13 +203,13 @@ class Game(ApplicationState):
                 colorkey = image.get_at((0,0))
             image.set_colorkey(colorkey, RLEACCEL)
         return image, image.get_rect()
+
     def resume(self):    
 	self.clock = pygame.time.Clock()
 	print "Loop Started"
 	
     def update(self):
-        if self.is_gameover():
-            self.player.kill()
+        
 
 	
 	self.spawnticker += 1
@@ -242,13 +247,6 @@ class Game(ApplicationState):
         for robot in coll:
             robot.damage(coll[robot][0])
             
-        #gameover
-    def is_gameover(self):
-        all_alive = self.player.alive()
-        for robot in self.robot_grp:
-            all_alive = all_alive and robot.alive()
-
-        return not all_alive
 
     def draw(self, screen):
 	screen.fill(BG_COLOR)
@@ -275,9 +273,6 @@ class Game(ApplicationState):
 
         gameover_text = self.font.render("Game over! Your score is %05d. Hit ESC + q to return to main menu."%self.score, False, (255,255,255))
 
-        if self.is_gameover():
-            print "game over"
-            screen.blit(gameover_text, (10,350))
 
 class GameOver(ApplicationState):
     fg_color = 25,255,55
