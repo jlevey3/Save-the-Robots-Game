@@ -59,8 +59,10 @@ class Robot(Sprite):
 
     def __init__(self,loc,bounds):
         Sprite.__init__(self)
+        self.bounds = bounds
         self.image = Surface(self.size)
         self.rect = self.image.get_rect()
+
         self.rect.bottomleft = loc
         self.image.fill(self.color)
         self.makeshield()
@@ -77,7 +79,6 @@ class Robot(Sprite):
         keys = pygame.key.get_pressed()
         self.rect.clamp_ip(self.bounds)
         childsprite.update
-    
     def damage (self, source):
         if not self.immunitycheck(source):
             self.health -= 1
@@ -156,11 +157,18 @@ class Brotherbot(Robot):
 class Sisterbot(Robot):
    # color = 238,130,238
     size = 20,20
-    health = 3
+    health = 9
     weight = 2
     name = "sister"
+    
+    def immunitycheck(self, source):
+        if True:
+            self.rect.x -= 50
+        self.rect.clamp_ip(self.bounds)
+
     def get_sound(self):
         self.death_sfx = load_sfx("sisterbotdeath")
+
 
 class RoboImages(Sprite):
     color = 0,0,0

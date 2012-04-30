@@ -233,7 +233,7 @@ class Impact(Meteor):
         self.duration = duration
         self.kind = kind
         self.get_sprite()
-        self.impact_sfx = load_sfx("stockmeteorhit")
+        self.get_sound()
         self.impact_sfx.stop()
 
         self.impact_sfx.play()
@@ -257,7 +257,8 @@ class Impact(Meteor):
         self.image.set_colorkey((255,255,255))
         #-------
         
-        
+    def get_sound(self):
+         self.impact_sfx = load_sfx("stockmeteorhit")
         
         
     def update(self):
