@@ -69,23 +69,18 @@ Good luck!
         
 class MainMenu(ApplicationState):
     fg_color = 25,255,55
-    bg_color = 0,0,0
+
     flash_rate = 500
 
     def setup(self):
-	self.titleimage = load_image("logo")
-	self.titleimage.set_colorkey((255,255,255))
+	#self.titleimage = load_image("logo")
+	#self.titleimage.set_colorkey((255,255,255))
         font = pygame.font.Font(None, 70)
-
-        font.set_bold(True)
-        font.set_underline(True)
-        self.title = font.render("", True, self.fg_color, self.bg_color)
-
-        font.set_bold(False)
+        self.BG_IMAGE = load_image("Menuscreen")
         font.set_italic(True)
         font.set_underline(False)
         font = pygame.font.Font(None,30)
-        self.inst = font.render("Press <SPACE> to Start", True, self.fg_color, self.bg_color)
+        self.inst = font.render("Press <SPACE> to Start", True, self.fg_color)
 
     def resume(self):
         self.clock = pygame.time.Clock()
@@ -105,14 +100,7 @@ class MainMenu(ApplicationState):
 
     def draw(self, screen):
         bounds = screen.get_rect()
-
-        screen.fill(self.bg_color)
-        
-        rect = self.title.get_rect()
-        rect.center = bounds.centerx, bounds.centery - bounds.height / 4
-        screen.blit(self.title, rect)
-	screen.blit(self.titleimage, (0,0))
-
+        screen.blit(self.BG_IMAGE, (0,0))
         if self.draw_inst:
             rect = self.inst.get_rect()
             rect.center = bounds.centerx, bounds.centery + bounds.height / 4
