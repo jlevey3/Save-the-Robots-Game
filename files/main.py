@@ -130,6 +130,7 @@ class Game(ApplicationState):
     def setup (self):
         print "STARTING LEVEL"
 	pygame.mixer.music.stop
+	self.timer = 0
 	self.SCREEN_SIZE = SCREEN_SIZE
 	self.BG_COLOR = BG_COLOR
 	self.score = 0
@@ -239,7 +240,8 @@ class Game(ApplicationState):
 	RoboGroup.robosprites.update()
         PlayerSprite.sprite.update()
 	DebrisGroup.debris.update()
-    
+	self.timer += 1
+
 	#collisions
         coll = groupcollide(self.player_grp, ImpactGroup.impacts, False, False)
         for robot in coll:
@@ -267,15 +269,16 @@ class Game(ApplicationState):
 	DebrisGroup.debris.draw(screen)
 	
 	self.clock.tick(30)
+	
+	    
         lives_text = self.font.render("Lives: %01d"%self.player.lives, False, (255,255,255))
-	score_text = self.font.render("Score: %05d"%self.score, False, (255,255,255))
+	timer_text = self.font.render("Score: %03d"%(self.timer/30), False, (255,255,255))
         health_text = self.font.render("Health: %03d"%self.player.health, False, (255,255,255))
 	screen.blit(lives_text, (200,5))
-	screen.blit(score_text, (5,5))
+	screen.blit(timer_text, (5,5))
         screen.blit(health_text, (400,5))
 
-        gameover_text = self.font.render("Game over! Your score is %05d. Hit ESC + q to return to main menu."%self.score, False, (255,255,255))
-
+   
 
 class GameOver(ApplicationState):
     fg_color = 25,255,55
@@ -285,12 +288,13 @@ class GameOver(ApplicationState):
         font = pygame.font.Font(None, 50)
         
         tb = TextBlock(font, justify=TextBlock.CENTER)
-        self.text = tb.render("""
+        self.text = tb.render(("""
 GAME OVER! 
+Your score is: %d
 
-Hit ESC + q to quit 
+Hit ESC + q to quit
 or <space> to return to the Main Menu!
-""".strip().split("\n"), True, self.fg_color, self.bg_color)
+""" % self.app.state.timer).strip().split("\n"), True, self.fg_color, self.bg_color)
 
     def handle_event(self, event):
         if event.type == KEYDOWN and event.key == K_ESCAPE:

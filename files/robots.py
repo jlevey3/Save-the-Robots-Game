@@ -112,9 +112,13 @@ class Fatherbot(Robot):
         
     
     def immunitycheck(self, source):
-        if source.kind == "ice" or source.kind == "coal":
+        if source.kind == "ice" or source.kind == "fire":
             pygame.draw.line(pygame.display.get_surface(), (255,0,0), self.rect.center, source.rect.center, 3)
+            self.hiss_sfx.stop()
+            self.hiss_sfx.play()
+            
             return True
+            
         elif source.kind == "radiation":
             return True
         else:
@@ -122,6 +126,7 @@ class Fatherbot(Robot):
     
     def get_sound(self):
         self.death_sfx = load_sfx("fatherbotdeath")
+        self.hiss_sfx = load_sfx("hiss")
 class Motherbot(Robot):
     #color = 0,122,255
     size = 20,20
@@ -146,6 +151,7 @@ class Brotherbot(Robot):
     
     def get_sound(self):
         self.death_sfx = load_sfx("brotherbotdeath")
+        self.bathit_sfx = load_sfx("bathit")
     def makeshield(self):
         self.childshield = Shield(self, "baseball")
         ShieldGroup.shields.add(self.childshield)
@@ -156,6 +162,8 @@ class Brotherbot(Robot):
     def immunitycheck(self, source):
         if source.kind == "rock":
             pygame.draw.line(pygame.display.get_surface(), (255,0,0), self.rect.center, source.rect.center, 3)
+            self.bathit_sfx.stop()
+            self.bathit_sfx.play()
             return True
         elif source.kind == "radiation":
             return True
