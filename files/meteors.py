@@ -192,7 +192,7 @@ class RadiationMeteor(Meteor):
             self.kill()
     
     def kill(self):
-        ImpactGroup.impacts.add(RadiationImpact (self.rect.center, self.bounds, 60, self.kind))
+        ImpactGroup.impacts.add(RadiationImpact (self.rect.center, self.bounds, 300, self.kind))
         Sprite.kill(self)
 
 
@@ -219,6 +219,7 @@ class Impact(Meteor):
     COLOR = 0,140,0
     duration = 5
     dir = 0
+    damage = 10
     
     def __init__(self,loc, bounds, duration, kind, dir = 0):
         
@@ -310,6 +311,7 @@ class FireImpact(Impact):
     kind = "Fire"
     duration = 60
     size = (160,160)
+    damage = 1
     
     def get_sprite(self):
         #return

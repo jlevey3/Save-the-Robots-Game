@@ -20,18 +20,18 @@ class MeteorSpawner(object):
     bounds = None
     
     #frequency = how many frames between each meteor
-    frequency_rock = 40
-    frequency_ice = 60
-    frequency_iron = 70
-    frequency_radiation = 71
-    frequency_fire = 40
+    frequency_rock = 50
+    frequency_ice = 70
+    frequency_iron = 120
+    frequency_radiation = 120
+    frequency_fire = 150
     frequency_gold = 200
     
     delay_rock = 0
-    delay_ice = 180
-    delay_iron = 300
-    delay_radiation = 400
-    delay_fire = 700
+    delay_ice = 600
+    delay_iron = 900
+    delay_radiation = 1200
+    delay_fire = 1500
     delay_gold = 800
     
     
@@ -48,28 +48,32 @@ class MeteorSpawner(object):
     # MeteorGroup.meteors.add(<MeteorType>Meteor((<x coordinate>,<y coordinate>), self.bounds, <frames until impact>, "<string of Meteor Type>"))
         
     def spawn_rock(self):
-	if self.spawnticker >= delay_rock:
+	if self.spawnticker >= self.delay_rock:
             if self.spawnticker % self.frequency_rock == 0:
-                MeteorGroup.meteors.add(RockMeteor((randrange(0,800),randrange(0,600)),self.bounds, 100, "rock"))
+                MeteorGroup.meteors.add(RockMeteor((randrange(0,800),randrange(0,600)),self.bounds, 200, "rock"))
             #optional: self.frequency_rock += (randrange(-3,3)).  Provides variation.
             
     
     def spawn_ice(self):
-        if self.spawnticker % self.frequency_ice == 0:
-            MeteorGroup.meteors.add(IceMeteor((randrange(0,800),randrange(0,600)),self.bounds, 100, "ice"))
+	if self.spawnticker >= self.delay_ice:
+	    if self.spawnticker % self.frequency_ice == 0:
+	        MeteorGroup.meteors.add(IceMeteor((randrange(0,800),randrange(0,600)),self.bounds, 200, "ice"))
 
     
     def spawn_iron(self):
-        if self.spawnticker  % self.frequency_iron == 0: 
-            MeteorGroup.meteors.add(IronMeteor((randrange(0,800),randrange(0,600)),self.bounds, 1000, "iron"))
+	if self.spawnticker >= self.delay_iron:
+	    if self.spawnticker  % self.frequency_iron == 0: 
+		MeteorGroup.meteors.add(IronMeteor((randrange(0,800),randrange(0,600)),self.bounds, 1000, "iron"))
     
     def spawn_radiation(self):
-        if self.spawnticker  % self.frequency_radiation == 0: 
-            MeteorGroup.meteors.add(RadiationMeteor((randrange(0,800),randrange(0,600)),self.bounds, 100, "radiation"))
+        if self.spawnticker >= self.delay_radiation:
+	    if self.spawnticker  % self.frequency_radiation == 0: 
+		MeteorGroup.meteors.add(RadiationMeteor((randrange(0,800),randrange(0,600)),self.bounds, 200, "radiation"))
     
     def spawn_fire(self):
-	if self.spawnticker  % self.frequency_fire == 0: 
-            MeteorGroup.meteors.add(FireMeteor((randrange(0,800),randrange(0,600)),self.bounds, 100, "fire"))
+	if self.spawnticker >= self.delay_radiation:
+	    if self.spawnticker  % self.frequency_fire == 0: 
+		MeteorGroup.meteors.add(FireMeteor((randrange(0,800),randrange(0,600)),self.bounds, 300, "fire"))
     
     def spawn_gold(self):
         return 8

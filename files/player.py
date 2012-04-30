@@ -13,8 +13,8 @@ class PlayerSprite(Group):
 class Player(Sprite):
     color = 255,255,255
     lives = 5
-    size = 20,20
-    speed = 8
+    size = 40,40
+    speed = 10
     health = 100
     anim_counter = 1
     anim_frame = 0
@@ -138,10 +138,10 @@ class Animation(Sprite):
         self.dir = dir
         self.get_anims()
 
-        try:
-            self.image = load_image(self.anim_array)
-        except:
-            self.image.fill(self.color)
+    #    try:
+     #       self.image = load_image(self.anim_array)
+      #  except:
+       #     //self.image.fill(self.color)
     
 
 

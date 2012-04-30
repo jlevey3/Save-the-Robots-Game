@@ -127,7 +127,7 @@ class PauseMenu(ApplicationState):
 class Game(ApplicationState):
     foo = "foo"
     
-    def setup (self):
+    def setup (self, level_num = 1):
         print "STARTING LEVEL"
 	pygame.mixer.music.stop
 	self.SCREEN_SIZE = SCREEN_SIZE
@@ -136,6 +136,7 @@ class Game(ApplicationState):
 	self.spawntime = 10
 	self.spawnticker = 0
 	self.robot_grp = RoboGroup.robots
+	self.level_num = level_num
 	self.BG_IMAGE = load_image("background1")
 	
 	self.bounds = self.app.screen.get_rect()

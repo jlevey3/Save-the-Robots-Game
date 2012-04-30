@@ -18,8 +18,8 @@ class Debris (Sprite):
     y = 0
     vx = 0
     vy = -20
-    def __init__(self, source, vx = 0, vy = -10):
-        self.vx = vx
+    def __init__(self, source, vx = 30, vy = -10):
+        self.vx = randrange(-30,30)
         self.vy = vy
         Sprite.__init__(self)
         self.size = source.size
