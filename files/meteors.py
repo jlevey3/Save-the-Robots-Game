@@ -233,7 +233,7 @@ class Impact(Meteor):
         self.duration = duration
         self.kind = kind
         self.get_sprite()
-        self.impact_sfx = load_sfx("lowhit")
+        self.impact_sfx = load_sfx("stockmeteorhit")
         self.impact_sfx.stop()
 
         self.impact_sfx.play()

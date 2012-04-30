@@ -37,7 +37,7 @@ class Player(Sprite):
         self.carrying = None
         self.sprite = PlayerSprite.sprite.add(Animation(self))
         #self.image.fill((255,255,255,.5))
-        self.death_sfx = load_sfx("brotherbotdeath")
+        self.death_sfx = load_sfx("archiestrike")
        
     
     def grab(self, robot):

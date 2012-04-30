@@ -65,8 +65,11 @@ class Robot(Sprite):
         self.image.fill(self.color)
         self.makeshield()
         self.sprite = RoboGroup.robosprites.add(RoboImages (self))
-        self.death_sfx = load_sfx("brotherbotdeath")
+        self.get_sound()
 #def update(self):
+
+    def get_sound(self):
+        self.death_sfx = load_sfx("brotherbotdeath")
 
     def makeshield(self):
         return
@@ -113,13 +116,17 @@ class Fatherbot(Robot):
         else:
             return False
     
+    def get_sound(self):
+        self.death_sfx = load_sfx("fatherbotdeath")
 class Motherbot(Robot):
     #color = 0,122,255
     size = 20,20
     health = 2
     weight = 3
     name = "mother"
-   
+    
+    def get_sound(self):
+        self.death_sfx = load_sfx("motherbotdeath")
 
 class Brotherbot(Robot):
     #color = 30,250,250
@@ -128,7 +135,8 @@ class Brotherbot(Robot):
     weight = 3
     name = "brother"
     
-    
+    def get_sound(self):
+        self.death_sfx = load_sfx("brotherbotdeath")
     def makeshield(self):
         self.childshield = Shield(self, "baseball")
         ShieldGroup.shields.add(self.childshield)
@@ -151,7 +159,8 @@ class Sisterbot(Robot):
     health = 3
     weight = 2
     name = "sister"
-
+    def get_sound(self):
+        self.death_sfx = load_sfx("sisterbotdeath")
 
 class RoboImages(Sprite):
     color = 0,0,0
