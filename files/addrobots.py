@@ -11,3 +11,4 @@ def addrobots(bounds):
     RoboGroup.robots.add(Fatherbot((randrange(0,800),randrange(0,600)), bounds))
     RoboGroup.robots.add(Motherbot((randrange(0,800),randrange(0,600)), bounds))
     RoboGroup.robots.add(Sisterbot((randrange(0,800),randrange(0,600)), bounds))
+    print "ROBOT GROUP SIZE: "+ str(len(RoboGroup.robots))
