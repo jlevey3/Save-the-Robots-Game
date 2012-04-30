@@ -4,7 +4,7 @@ import pygame, math, random
 from pygame.locals import *
 from pygame.sprite import Group, GroupSingle, groupcollide
 from random import randrange
-from player import Player
+from player import *
 from robots import *
 from meteors import * # Meteor, Impact
 from app import ApplicationState, Application
@@ -240,6 +240,7 @@ class Game(ApplicationState):
 	ShieldGroup.shields.update()
 	FallingGroup.fallings.update()
 	RoboGroup.robosprites.update()
+        PlayerSprite.sprite.update()
     
 	#collisions
         coll = groupcollide(self.player_grp, ImpactGroup.impacts, False, False)
@@ -271,7 +272,7 @@ class Game(ApplicationState):
 	self.robot_grp.draw(screen)
 	FallingGroup.fallings.draw(screen)
 	RoboGroup.robosprites.draw(screen)
-	
+	PlayerSprite.sprite.draw(screen)
 	
 	self.clock.tick(30)
         lives_text = self.font.render("Lives: %01d"%self.player.lives, False, (255,255,255))

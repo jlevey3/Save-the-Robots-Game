@@ -19,14 +19,18 @@ def play_song(song, times=-1):
 
 _images = {}
 def load_image(name):
-    if name not in _images:
+    if name.find("*") != -1:
+        imgs = []
+        for img in glob.glob(name):
+            imgs.append( load_image(name) )
+    else:
         try:
             path = os.path.join(IMG_DIR, name + ".png")
             _images[name] = pygame.image.load(path)
         except:
             path = os.path.join(IMG_DIR, name + ".bmp")
-        _images[name] = pygame.image.load(path)
-    return _images[name].convert()
+            _images[name] = pygame.image.load(path)
+        return _images[name].convert()
     
 def load_image_png(name):
     if name not in _images:
