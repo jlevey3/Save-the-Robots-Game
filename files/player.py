@@ -106,11 +106,13 @@ class Player(Sprite):
             
         if source.kind == "rock":
             print "Player was hit by a rock!"
-            self.health -= 25
-        if self.health <= 0:
+            self.health -= 50
+        if self.health <= 0 and self.lives > 0:
             self.lives -= 1
+            self.health = 100
         if source.kind == "radiation":
             self.speedmods[1] = -4
+            
 
    # forward=[(load_image("forward_"+str(self.iscarrying)+"_"+str(self.frame))]
 

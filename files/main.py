@@ -182,6 +182,8 @@ class Game(ApplicationState):
                     self.player.grab(robot)
                     self.score += 50
                     print "robot picked up"
+        if self.player.lives <= 0 and self.player.health <=0:
+            self.app.set_state(GameOver)
 
     def load_image(name, colorkey=None):
         fullname = os.path.join('resources', name)
@@ -266,8 +268,10 @@ class Game(ApplicationState):
 	self.clock.tick(30)
         lives_text = self.font.render("Lives: %01d"%self.player.lives, False, (255,255,255))
 	score_text = self.font.render("Score: %05d"%self.score, False, (255,255,255))
+        health_text = self.font.render("Health: %03d"%self.player.health, False, (255,255,255))
 	screen.blit(lives_text, (200,5))
 	screen.blit(score_text, (5,5))
+        screen.blit(health_text, (400,5))
 
         gameover_text = self.font.render("Game over! Your score is %05d. Hit ESC + q to return to main menu."%self.score, False, (255,255,255))
 
@@ -275,6 +279,32 @@ class Game(ApplicationState):
             print "game over"
             screen.blit(gameover_text, (10,350))
 
-
+class GameOver(ApplicationState):
+    fg_color = 25,255,55
+    bg_color = 0,0,0
 	
-    
+    def setup(self):
+        font = pygame.font.Font(None, 50)
+        
+        tb = TextBlock(font, justify=TextBlock.CENTER)
+        self.text = tb.render("""
+GAME OVER! 
+
+Hit ESC + q to quit 
+or <space> to return to the Main Menu!
+""".strip().split("\n"), True, self.fg_color, self.bg_color)
+
+    def handle_event(self, event):
+        if event.type == KEYDOWN and event.key == K_ESCAPE:
+            self.app.quit()
+        elif event.type == KEYDOWN and event.key == K_SPACE:
+            self.app.set_state(MainMenu)
+        
+    def draw(self, screen):
+        bounds = screen.get_rect()
+        
+        screen.fill(self.bg_color)
+
+        rect = self.text.get_rect()
+        rect.center = bounds.center
+        screen.blit(self.text, rect)
