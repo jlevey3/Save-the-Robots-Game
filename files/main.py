@@ -128,6 +128,7 @@ class Game(ApplicationState):
     foo = "foo"
     
     def setup (self):
+        print "STARTING LEVEL"
 	pygame.mixer.music.stop
 	self.SCREEN_SIZE = SCREEN_SIZE
 	self.BG_COLOR = BG_COLOR
@@ -140,9 +141,13 @@ class Game(ApplicationState):
 	self.bounds = self.app.screen.get_rect()
         self.font = pygame.font.Font(None,35)
 	
-	ImpactGroup.impacts = Group()
-	ShieldGroup.shields = Group()
-	MeteorGroup.meteors = Group()
+	ImpactGroup.impacts.empty()
+	ShieldGroup.shields.empty()
+	MeteorGroup.meteors.empty()
+        RoboGroup.robosprites.empty()
+        PlayerSprite.sprite.empty()
+        self.robot_grp.empty()
+        
 	
 	#creates a new meteor spawner
 	self.MeteorSpawner = meteorspawn.MeteorSpawner()
@@ -175,7 +180,7 @@ class Game(ApplicationState):
     def handle_event(self, event):
         if event.type == KEYDOWN and event.key == K_ESCAPE:
             self.app.set_state(PauseMenu)
-        elif event.type == KEYDOWN and event.key == K_SPACE and not self.is_gameover():
+        elif event.type == KEYDOWN and event.key == K_SPACE:
             if self.player.carrying:
                 self.player.drop()
             else:
@@ -183,6 +188,8 @@ class Game(ApplicationState):
                     self.player.grab(robot)
                     self.score += 50
                     print "robot picked up"
+        if self.player.lives <= 0 and self.player.health <=0:
+            self.app.set_state(GameOver)
 
     def load_image(name, colorkey=None):
         fullname = os.path.join('resources', name)
@@ -197,13 +204,13 @@ class Game(ApplicationState):
                 colorkey = image.get_at((0,0))
             image.set_colorkey(colorkey, RLEACCEL)
         return image, image.get_rect()
+
     def resume(self):    
 	self.clock = pygame.time.Clock()
 	print "Loop Started"
 	
     def update(self):
-        if self.is_gameover():
-            self.player.kill()
+        
 
 	
 	self.spawnticker += 1
@@ -242,13 +249,6 @@ class Game(ApplicationState):
         for robot in coll:
             robot.damage(coll[robot][0])
             
-        #gameover
-    def is_gameover(self):
-        all_alive = self.player.alive()
-        for robot in self.robot_grp:
-            all_alive = all_alive and robot.alive()
-
-        return not all_alive
 
     def draw(self, screen):
 	screen.fill(BG_COLOR)
@@ -269,15 +269,40 @@ class Game(ApplicationState):
 	self.clock.tick(30)
         lives_text = self.font.render("Lives: %01d"%self.player.lives, False, (255,255,255))
 	score_text = self.font.render("Score: %05d"%self.score, False, (255,255,255))
+        health_text = self.font.render("Health: %03d"%self.player.health, False, (255,255,255))
 	screen.blit(lives_text, (200,5))
 	screen.blit(score_text, (5,5))
+        screen.blit(health_text, (400,5))
 
         gameover_text = self.font.render("Game over! Your score is %05d. Hit ESC + q to return to main menu."%self.score, False, (255,255,255))
 
-        if self.is_gameover():
-            print "game over"
-            screen.blit(gameover_text, (10,350))
 
-
+class GameOver(ApplicationState):
+    fg_color = 25,255,55
+    bg_color = 0,0,0
 	
-    
+    def setup(self):
+        font = pygame.font.Font(None, 50)
+        
+        tb = TextBlock(font, justify=TextBlock.CENTER)
+        self.text = tb.render("""
+GAME OVER! 
+
+Hit ESC + q to quit 
+or <space> to return to the Main Menu!
+""".strip().split("\n"), True, self.fg_color, self.bg_color)
+
+    def handle_event(self, event):
+        if event.type == KEYDOWN and event.key == K_ESCAPE:
+            self.app.quit()
+        elif event.type == KEYDOWN and event.key == K_SPACE:
+            self.app.set_state(MainMenu)
+        
+    def draw(self, screen):
+        bounds = screen.get_rect()
+        
+        screen.fill(self.bg_color)
+
+        rect = self.text.get_rect()
+        rect.center = bounds.center
+        screen.blit(self.text, rect)

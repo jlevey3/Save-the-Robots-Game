@@ -103,14 +103,19 @@ class Player(Sprite):
         "Applies damage effect unique to the robot.  source is the object, source.kind is the damage type"
         if source.kind != "radiation":  
             print "player hit: ", source, " ", source.kind
-            
+        if source.kind == "ice":
+            self.health -=20
+        if source.kind == "fire":
+            self.health -= 5
         if source.kind == "rock":
             print "Player was hit by a rock!"
-            self.health -= 25
-        if self.health <= 0:
+            self.health -= 10
+        if self.health <= 0 and self.lives > 0:
             self.lives -= 1
+            self.health = 100
         if source.kind == "radiation":
             self.speedmods[1] = -4
+            
 
    # forward=[(load_image("forward_"+str(self.iscarrying)+"_"+str(self.frame))]
 
