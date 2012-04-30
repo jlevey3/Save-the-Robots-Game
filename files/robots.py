@@ -6,6 +6,7 @@ from pygame import Surface
 from player import Player
 from app import *
 from resource import *
+from debris import *
 
 class ShieldGroup(Group):
     shields = Group()
@@ -83,8 +84,9 @@ class Robot(Sprite):
         childsprite.update
     def damage (self, source):
         if not self.immunitycheck(source):
-            self.health -= 1
+            self.health -= source.damage
             print "robot hit"
+            DebrisGroup.debris.add(Gear(self))
             if self.health <= 0:
                 print "Robot killed"
                 self.kill()
@@ -102,7 +104,7 @@ class Robot(Sprite):
 class Fatherbot(Robot):
     #color = 255,122,0
     size = 20,20
-    health = 2
+    health = 100
     weight = 4
     name = "father"
     
@@ -130,7 +132,7 @@ class Fatherbot(Robot):
 class Motherbot(Robot):
     #color = 0,122,255
     size = 20,20
-    health = 2
+    health = 120
     weight = 3
     name = "mother"
     
@@ -145,7 +147,7 @@ class Motherbot(Robot):
 class Brotherbot(Robot):
     #color = 30,250,250
     size = 15,15
-    health = 3
+    health = 90
     weight = 3
     name = "brother"
     
@@ -173,7 +175,7 @@ class Brotherbot(Robot):
 class Sisterbot(Robot):
    # color = 238,130,238
     size = 20,20
-    health = 9
+    health = 90
     weight = 2
     name = "sister"
     
