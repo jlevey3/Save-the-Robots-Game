@@ -15,6 +15,7 @@ from resource import *
 import addrobots
 import meteorspawn
 from meteorspawn import MeteorGroup
+from debris import DebrisGroup
 
 SCREEN_SIZE = 800,600
 BG_COLOR = 0,0,0
@@ -230,6 +231,7 @@ class Game(ApplicationState):
 	FallingGroup.fallings.update()
 	RoboGroup.robosprites.update()
         PlayerSprite.sprite.update()
+	DebrisGroup.debris.update()
     
 	#collisions
         coll = groupcollide(self.player_grp, ImpactGroup.impacts, False, False)
@@ -262,6 +264,7 @@ class Game(ApplicationState):
 	FallingGroup.fallings.draw(screen)
 	RoboGroup.robosprites.draw(screen)
 	PlayerSprite.sprite.draw(screen)
+	DebrisGroup.debris.draw(screen)
 	
 	self.clock.tick(30)
         lives_text = self.font.render("Lives: %01d"%self.player.lives, False, (255,255,255))

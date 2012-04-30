@@ -7,7 +7,8 @@ from utils import *
 from resource import *
 from random import randint
 import math
-
+import debris
+from debris import *
 
 def collide_meteor_shield(meteor, shield):
     return collide_rect_circle(meteor.rect, shield.rect.center, shield.rect.width/2)
@@ -423,6 +424,7 @@ class FallingMeteor(Sprite):
 
     def update(self):
         if not self.parent.alive():
+            DebrisGroup.debris.add(Debris(self))
             self.kill()
             
         if self.parent.duration <=20:
