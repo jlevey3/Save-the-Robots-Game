@@ -82,7 +82,9 @@ class MainMenu(ApplicationState):
         font.set_underline(False)
         font = pygame.font.Font(None,30)
         self.inst = font.render("Press <SPACE> to Start", True, self.fg_color)
-
+	
+	
+	
     def resume(self):
         self.clock = pygame.time.Clock()
         self.time = 0
@@ -91,7 +93,7 @@ class MainMenu(ApplicationState):
         if event.type == KEYDOWN and (event.key == K_q or event.key == K_ESCAPE):
             self.app.quit()
         elif event.type == KEYDOWN and event.key == K_SPACE:
-            self.app.set_state(Game)
+            self.app.set_state(Instruction2)
 
     def update(self):
         self.time += self.clock.tick()
@@ -106,6 +108,51 @@ class MainMenu(ApplicationState):
             rect = self.inst.get_rect()
             rect.center = bounds.centerx, bounds.centery + bounds.height / 4
             screen.blit(self.inst, rect)
+
+
+class Instruction2(ApplicationState):
+    fg_color = 25,255,55
+    bg_color = 0,0,0
+    song = "menumusic"
+    
+    def setup(self):
+	pygame.mixer.music.set_volume(0.50)
+        #play_song(self.song)
+	font = pygame.font.Font(None, 30)
+	self.BG_IMAGE = load_image("menuscreenblank")
+        
+        tb = TextBlock(font, justify=TextBlock.LEFT)
+        self.text = tb.render("""The Meteors are coming, so we have to teach you fast!
+Archie is strong, but his family is heavy and he'll get tired if
+he carries someone for too long.  Think strategically!
+
+In addition, each family member has a special power to help:
+Sisterbot will jump away if she is hit.
+Brotherbot will bat away rocky meteors.
+Motherbot protects herself with an umbrella.
+Fatherbot is immune to ice and fire meteors.
+Babybot is very light and easy to carry.
+
+SURVIVE AS LONG AS YOU CAN.  HERE THEY COME!!!
+<press space to continue>
+
+""".strip().split("\n"), True, self.fg_color, self.bg_color)
+
+                
+    def handle_event(self, event):
+        if event.type == KEYDOWN and event.key == K_ESCAPE:
+            self.app.quit()
+        elif event.type == KEYDOWN and event.key == K_SPACE:
+            self.app.set_state(Game)
+
+    def draw(self, screen):
+        bounds = screen.get_rect()
+	
+        screen.fill(self.bg_color)
+        screen.blit(self.BG_IMAGE, (0,0))
+        rect = self.text.get_rect()
+        rect.center = bounds.center
+        screen.blit(self.text, rect)
 
 
 class PauseMenu(ApplicationState):
@@ -123,6 +170,7 @@ class PauseMenu(ApplicationState):
             self.app.set_state(MainMenu)
         elif event.type == KEYDOWN and (event.key == K_SPACE or event.key == K_ESCAPE):
             self.app.set_state(self.game)
+
 
 class Game(ApplicationState):
     foo = "foo"
@@ -142,13 +190,14 @@ class Game(ApplicationState):
 	
 	self.bounds = self.app.screen.get_rect()
         self.font = pygame.font.Font(None,35)
-	
+	self.livingbots = 5
 	ImpactGroup.impacts.empty()
 	ShieldGroup.shields.empty()
 	MeteorGroup.meteors.empty()
         RoboGroup.robosprites.empty()
         PlayerSprite.sprite.empty()
         self.robot_grp.empty()
+	self.deadcount = 0
         
 	
 	#creates a new meteor spawner
@@ -158,7 +207,7 @@ class Game(ApplicationState):
 	
         
     
-	self.player = Player(self.bounds.center, self.bounds) #sets starting position fir player
+	self.player = Player(self.bounds.center, self.bounds) #sets starting position for player
 	
 	
 	self.player_grp = GroupSingle(self.player)
@@ -193,6 +242,7 @@ class Game(ApplicationState):
         if self.player.lives <= 0 and self.player.health <=0:
             self.app.set_state(GameOver)
 
+    
     def load_image(name, colorkey=None):
         fullname = os.path.join('resources', name)
         try:
@@ -251,19 +301,26 @@ class Game(ApplicationState):
         coll = groupcollide(self.robot_grp, ImpactGroup.impacts, False, False)
         for robot in coll:
             robot.damage(coll[robot][0])
-            
-
+        
+	num_alive = 0
+	for robot in self.robot_grp:
+	    if not robot.alive():
+		num_alive += 1
+	self.player.lives -= (num_alive - self.deadcount)
+	self.deadcount = num_alive
+	    
     def draw(self, screen):
 	screen.fill(BG_COLOR)
     
 	screen.blit(self.BG_IMAGE,(0,0))
 	self.robot_grp.draw(screen)	
 
+	#Commented out family and archie hitboxes because fuck.
 	ImpactGroup.impacts.draw(screen)
 	ShieldGroup.shields.draw(screen)
 	self.meteors.draw(screen)
-	self.player_grp.draw(screen)
-	self.robot_grp.draw(screen)
+	#self.player_grp.draw(screen)
+	#self.robot_grp.draw(screen)
 	FallingGroup.fallings.draw(screen)
 	RoboGroup.robosprites.draw(screen)
 	PlayerSprite.sprite.draw(screen)
@@ -273,7 +330,7 @@ class Game(ApplicationState):
 	
 	    
         lives_text = self.font.render("Lives: %01d"%self.player.lives, False, (255,255,255))
-	timer_text = self.font.render("Score: %03d"%(self.timer/30), False, (255,255,255))
+	timer_text = self.font.render("Score: %03d"%((self.timer/30)), False, (255,255,255))
         health_text = self.font.render("Health: %03d"%self.player.health, False, (255,255,255))
 	screen.blit(lives_text, (200,5))
 	screen.blit(timer_text, (5,5))
@@ -296,7 +353,7 @@ Your score is: %d
 Hit ESC to quit
 
 or <space> to return to the Main Menu!
-""" % self.app.state.timer).strip().split("\n"), True, self.fg_color, self.bg_color)
+""" % (self.app.state.timer/30)).strip().split("\n"), True, self.fg_color, self.bg_color)
 
     def handle_event(self, event):
         if event.type == KEYDOWN and event.key == K_ESCAPE:

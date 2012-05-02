@@ -5,17 +5,27 @@ from pygame.sprite import Sprite, Group
 from pygame import Surface
 from resource import *
 import glob
+import math
 
 class PlayerSprite(Group):
     sprite = Group()
 
 
+
+    
+        
 class Player(Sprite):
     color = 255,255,255
     lives = 5
     size = 40,40
     speed = 10
     health = 100
+    # Endurance:
+    max = 500
+    value = 500
+    recoveryrate = 5
+    
+    
     anim_counter = 1
     anim_frame = 0
     sprite = 0
@@ -23,7 +33,7 @@ class Player(Sprite):
     anim_array = []
     speedmod_rad = 0 # default -2
     speedmod_carrying = 0 #default -2
-    speedmods = [0,0] #element 0 is carried, element 1-X is environment.
+    speedmods = [0,0,0] #element 0 is carried, element 1-X is environment.
     
 
     def __init__(self,loc,bounds):
@@ -38,6 +48,7 @@ class Player(Sprite):
         self.sprite = PlayerSprite.sprite.add(Animation(self))
         #self.image.fill((255,255,255,.5))
         self.death_sfx = load_sfx("archiestrike")
+        
        
     
     def grab(self, robot):
@@ -50,15 +61,29 @@ class Player(Sprite):
         self.speedmods[0] = 0
 
     def update(self):
-       
+        if self.carrying != None:
+            if not self.carrying.alive():
+                self.carrying = None
         if self.carrying == None:
             self.speedmods[0] = 0
+            self.recover()
+        else:
+            self.decay()
+        self.speedmods[2] = -self.tired()
+        print str(self.value) + " " + str(self.tired())
         speedtotal = 0
         for element in self.speedmods[:]:
             speedtotal += element
         if self.speed + speedtotal <= 0:
             speedtotal = -self.speed + 1
         keys = pygame.key.get_pressed()
+        
+        #For testing.
+        
+        if keys[K_y]:
+            self.lives -=1
+            self.health -= 100
+        
         if keys[K_DOWN] or keys[K_s]:
             self.dir = 2
             self.rect.y += (self.speed + speedtotal)
@@ -116,6 +141,20 @@ class Player(Sprite):
         if source.kind == "radiation":
             self.speedmods[1] = -4
             
+            
+            
+    def recover(self):
+        if self.value < self.max:
+            if (self.max - self.value) <= self.recoveryrate:
+                self.value = self.max
+            else: self.value += self.recoveryrate
+    
+    def decay(self):
+        if self.value > 0:
+            self.value -= 1
+    
+    def tired(self):
+        return math.floor(7 - (self.value / (self.max/7)))
 
    # forward=[(load_image("forward_"+str(self.iscarrying)+"_"+str(self.frame))]
 
@@ -186,3 +225,5 @@ class Animation(Sprite):
         self.anim_array[0].append([])
 
     
+
+        

@@ -51,6 +51,12 @@ class MeteorSpawner(object):
 	if self.spawnticker >= self.delay_rock:
             if self.spawnticker % self.frequency_rock == 0:
                 MeteorGroup.meteors.add(RockMeteor((randrange(0,800),randrange(0,600)),self.bounds, 200, "rock"))
+	if self.spawnticker >= 1500:
+	    if self.spawnticker % self.frequency_rock == 0:
+                MeteorGroup.meteors.add(RockMeteor((randrange(0,800),randrange(0,600)),self.bounds, 200, "rock"))
+		self.frequency_rock -=1
+		if self.frequency_rock <= 0:
+		    self.frequency_rock = 0
             #optional: self.frequency_rock += (randrange(-3,3)).  Provides variation.
             
     

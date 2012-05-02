@@ -49,4 +49,9 @@ class Gear (Debris):
         self.image = Surface(self.size)
         self.image = load_image("gear")
         self.image.set_colorkey((255,255,255))
-        
+
+class Spark (Debris):
+    def get_sprite(self):
+        self.image = Surface(self.size)
+        self.image = load_image("spark")
+        self.image.set_colorkey((255,255,255))        

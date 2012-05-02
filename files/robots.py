@@ -25,6 +25,7 @@ class Shield(Sprite):
         self.parent=parent
         Sprite.__init__(self)
         self.kind = kind
+        self.hiss_sfx = load_sfx("hiss")
         if kind == "baseball":
             self.color = 0,90,90
         elif kind == "cigar":
@@ -75,6 +76,7 @@ class Robot(Sprite):
 
     def get_sound(self):
         self.death_sfx = load_sfx("brotherbotdeath")
+        self.hiss_sfx = load_sfx("hiss")
 
     def makeshield(self):
         return
@@ -86,12 +88,18 @@ class Robot(Sprite):
         if not self.immunitycheck(source):
             self.health -= source.damage
             print "robot hit"
-            DebrisGroup.debris.add(Gear(self))
+            if source.kind == "fire":
+                DebrisGroup.debris.add(Spark(self))
+                self.hiss_sfx.stop()
+                self.hiss_sfx.play()
+                
+            else:
+                DebrisGroup.debris.add(Gear(self))
             if self.health <= 0:
                 print "Robot killed"
-                self.kill()
                 self.death_sfx.stop()
                 self.death_sfx.play()
+                self.kill()
     
     def immunitycheck(self, source):
         if source.kind =="radiation":
@@ -99,6 +107,13 @@ class Robot(Sprite):
         else:
             return False
             
+
+class Babybot(Robot):
+    size = 10,10
+    health = 70
+    weight = 0
+    name = "baby"
+
 
 
 class Fatherbot(Robot):
@@ -116,8 +131,7 @@ class Fatherbot(Robot):
     def immunitycheck(self, source):
         if source.kind == "ice" or source.kind == "fire":
             pygame.draw.line(pygame.display.get_surface(), (255,0,0), self.rect.center, source.rect.center, 3)
-            self.hiss_sfx.stop()
-            self.hiss_sfx.play()
+            
             
             return True
             
@@ -128,7 +142,7 @@ class Fatherbot(Robot):
     
     def get_sound(self):
         self.death_sfx = load_sfx("fatherbotdeath")
-        self.hiss_sfx = load_sfx("hiss")
+        
 class Motherbot(Robot):
     #color = 0,122,255
     size = 20,20
@@ -146,7 +160,7 @@ class Motherbot(Robot):
 
 class Brotherbot(Robot):
     #color = 30,250,250
-    size = 15,15
+    size = 20,20
     health = 90
     weight = 3
     name = "brother"
@@ -195,12 +209,15 @@ class RoboImages(Sprite):
         Sprite.__init__(self)
         self.parent = parent
         self.name = parent.name
+        if parent.name == "baby":
+            self.size = 40,40
         self.color = parent.color
         self.image = Surface(self.size)
         self.rect = self.image.get_rect()
         self.rect.centerx = self.parent.rect.centerx
         self.rect.centery = self.parent.rect.centery
         self.dir = dir
+        
     
 
         try:
